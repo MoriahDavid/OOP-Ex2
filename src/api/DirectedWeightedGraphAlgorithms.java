@@ -1,5 +1,6 @@
 package api;
 import java.util.List;
+
 /**
  * This interface represents a Directed (positive) Weighted Graph Theory Algorithms including:
  * 0. clone(); (copy)
@@ -19,6 +20,7 @@ import java.util.List;
  *
  */
 public interface DirectedWeightedGraphAlgorithms {
+
     /**
      * Inits the graph on which this set of algorithms operates on.
      * @param g
@@ -30,17 +32,20 @@ public interface DirectedWeightedGraphAlgorithms {
      * @return
      */
     public DirectedWeightedGraph getGraph();
+
     /**
      * Computes a deep copy of this weighted graph.
      * @return
      */
     public DirectedWeightedGraph copy();
+
     /**
      * Returns true if and only if (iff) there is a valid path from each node to each
      * other node. NOTE: assume directional graph (all n*(n-1) ordered pairs).
      * @return
      */
     public boolean isConnected();
+
     /**
      * Computes the length of the shortest path between src to dest
      * Note: if no such path --> returns -1
@@ -49,6 +54,7 @@ public interface DirectedWeightedGraphAlgorithms {
      * @return
      */
     public double shortestPathDist(int src, int dest);
+
     /**
      * Computes the the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
@@ -66,13 +72,15 @@ public interface DirectedWeightedGraphAlgorithms {
      * @return the Node data to which the max shortest path to all the other nodes is minimized.
      */
     public NodeData center();
-   /**
-    * Computes a list of consecutive nodes which go over all the nodes in cities.
-    * the sum of the weights of all the consecutive (pairs) of nodes (directed) is the "cost" of the solution -
-    * the lower the better.
-    * See: https://en.wikipedia.org/wiki/Travelling_salesman_problem
-    */
+
+    /**
+     * Computes a list of consecutive nodes which go over all the nodes in cities.
+     * the sum of the weights of all the consecutive (pairs) of nodes (directed) is the "cost" of the solution -
+     * the lower the better.
+     * See: https://en.wikipedia.org/wiki/Travelling_salesman_problem
+     */
     List<NodeData> tsp(List<NodeData> cities);
+
     /**
      * Saves this weighted (directed) graph to the given
      * file name - in JSON format
