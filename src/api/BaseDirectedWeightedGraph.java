@@ -5,11 +5,14 @@ import java.util.Iterator;
 
 public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
     private HashMap<Integer, NodeData> nodes;
-    private HashMap<Integer, HashMap<Integer, EdgeData>> edges;
+    private HashMap<Integer, HashMap<Integer, EdgeData>> edges_src, edges_dest;
+    private int e_counter = 0;
+    private int mc_counter = 0;
 
     public BaseDirectedWeightedGraph(){
         this.nodes = new HashMap<Integer, NodeData>();
-        this.edges = new HashMap<Integer, HashMap<Integer, EdgeData>>();
+        this.edges_src = new HashMap<Integer, HashMap<Integer, EdgeData>>();
+        this.edges_dest = new HashMap<Integer, HashMap<Integer, EdgeData>>();
     }
 
     /**
@@ -33,8 +36,8 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public EdgeData getEdge(int src, int dest) {
-        if(this.edges.containsKey(src)){
-            return this.edges.get(src).getOrDefault(dest, null);
+        if(this.edges_src.containsKey(src)){
+            return this.edges_src.get(src).getOrDefault(dest, null);
         }
         return null;
     }
@@ -48,6 +51,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
     @Override
     public void addNode(NodeData n) {
         this.nodes.put(n.getKey(), n);
+        this.mc_counter++;
     }
 
     /**
@@ -65,13 +69,22 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
             return;
         }
 
-        HashMap<Integer, EdgeData> src_edges = this.edges.getOrDefault(src, null);
-        if(src_edges == null){
-            src_edges = new HashMap<Integer, EdgeData>();
-            this.edges.put(src, src_edges);
+        HashMap<Integer, EdgeData> src_e = this.edges_src.getOrDefault(src, null);
+        if(src_e == null){
+            src_e = new HashMap<Integer, EdgeData>();
+            this.edges_src.put(src, src_e); // Create new HashMap for this src node.
         }
-        BaseEdgeData e = new BaseEdgeData(w, this.getNode(src), this.getNode(dest));
-        src_edges.put(dest, e);
+        HashMap<Integer, EdgeData> dest_e = this.edges_dest.getOrDefault(dest, null);
+        if(dest_e == null){
+            dest_e = new HashMap<Integer, EdgeData>();
+            this.edges_dest.put(dest, dest_e); // Create new HashMap for this dest node.
+        }
+
+        EdgeData e = new BaseEdgeData(w, this.getNode(src), this.getNode(dest));
+        src_e.put(dest, e);
+        dest_e.put(src, e);
+        this.e_counter++;
+        this.mc_counter++;
     }
 
     /**
@@ -119,7 +132,16 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public NodeData removeNode(int key) {
-        return null;
+        if(!this.nodes.containsKey(key)){
+            return null;
+        }
+        if(this.edges_src.containsKey(key)){
+            e_counter = e_counter - this.edges_src.get(key).size();
+            this.edges_src.remove(key);
+            this.edges_dest.remove(key);
+        }
+        this.mc_counter++; // TODO: check if need to increase also for every node that we deleted
+        return this.nodes.remove(key);
     }
 
     /**
@@ -132,7 +154,13 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public EdgeData removeEdge(int src, int dest) {
-        return null;
+        if(this.getEdge(src, dest) == null){
+            return null;
+        }
+        this.edges_src.get(src).remove(dest);
+        this.e_counter--;
+        this.mc_counter++;
+        return this.edges_dest.get(dest).remove(src);
     }
 
     /**
@@ -154,7 +182,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public int edgeSize() {
-        return this.edges.size();
+        return this.e_counter;
     }
 
     /**
@@ -164,6 +192,6 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public int getMC() {
-        return 0;
+        return this.mc_counter;
     }
 }
