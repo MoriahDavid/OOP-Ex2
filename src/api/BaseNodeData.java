@@ -1,6 +1,6 @@
 package api;
 
-public class BaseNodeDate implements api.NodeData {
+public class BaseNodeData implements api.NodeData {
 
     private int key;
     private int tag;
@@ -8,7 +8,7 @@ public class BaseNodeDate implements api.NodeData {
     private double weight;
     private GeoLocation location;
 
-    public BaseNodeDate(int key, int tag, String info, double weight, GeoLocation location){
+    public BaseNodeData(int key, int tag, String info, double weight, GeoLocation location){
         this.key = key;
         this.tag = tag;
         this.info = "" + info;

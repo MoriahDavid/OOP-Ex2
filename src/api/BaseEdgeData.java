@@ -7,11 +7,17 @@ public class BaseEdgeData implements api.EdgeData {
     private double weight;
     private NodeData dest;
 
-    public BaseEdgeData(int tag, String info, NodeData src, double weight, NodeData dest){
+    public BaseEdgeData(double weight, NodeData src, NodeData dest, int tag, String info){
+        this.weight = weight;
+        this.src = src;
+        this.dest = dest;
         this.tag = tag;
         this.info = "" + info;
-        this.src = src;
+    }
+
+    public BaseEdgeData(double weight, NodeData src, NodeData dest) {
         this.weight = weight;
+        this.src = src;
         this.dest = dest;
     }
 
