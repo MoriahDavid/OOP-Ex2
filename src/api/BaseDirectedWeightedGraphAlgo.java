@@ -46,15 +46,27 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     @Override
     public boolean isConnected() {
 
-        for (Iterator<NodeData> it = this.graph.nodeIter(); it.hasNext(); ) {
+        Iterator<NodeData> it = this.graph.nodeIter();
+        NodeData start_node = it.next();
+
+        while (it.hasNext()) {
             NodeData node = it.next();
-
-            it.remove();
-
+            // check have route from start_node to node
 
         }
-
-
+        return false;
+    }
+    private boolean exist_path(DirectedWeightedGraph g, NodeData src, NodeData dst){
+        if(g.getEdge(src.getKey(), dst.getKey()) != null){
+            return true;
+        }
+        Iterator<EdgeData> it = g.edgeIter(src.getKey());
+        while(it.hasNext()){
+            EdgeData e = it.next();
+            if(exist_path(g, g.getNode(e.getDest()), dst)){
+                return true;
+            }
+        }
         return false;
     }
 
