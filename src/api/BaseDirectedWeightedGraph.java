@@ -52,6 +52,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public void addNode(NodeData n) {
+        // TODO: validate the inputs
         this.nodes.put(n.getKey(), n);
         this.mc_counter++;
     }
@@ -109,7 +110,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public Iterator<EdgeData> edgeIter() {
-        return null;
+        return new AllEdgesIterator();
     }
 
     /**

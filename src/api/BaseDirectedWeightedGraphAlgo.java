@@ -1,7 +1,6 @@
 package api;
 
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphAlgorithms{
     private DirectedWeightedGraph graph;
@@ -46,18 +45,57 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     @Override
     public boolean isConnected() {
 
-        Iterator<NodeData> it = this.graph.nodeIter();
+        DirectedWeightedGraph g = this.copy();
+        this.reset_nodes(g);
+
+        Iterator<NodeData> it = g.nodeIter();
         NodeData start_node = it.next();
 
         while (it.hasNext()) {
             NodeData node = it.next();
             // check have route from start_node to node
+            if(node.getTag() == 1)
+                continue;
 
+            if (!exist_path(g, start_node, node))
+                return false;
         }
-        return false;
+        this.transpose_graph(g);
+
+        this.reset_nodes(g);
+
+        it = g.nodeIter();
+        start_node = it.next();
+
+        while (it.hasNext()) {
+            NodeData node = it.next();
+            // check have route from start_node to node
+            if(node.getTag() == 1)
+                continue;
+
+            if (!exist_path(g, start_node, node))
+                return false;
+        }
+
+        return true;
     }
+
+    private void transpose_graph(DirectedWeightedGraph g){
+        // TODO: Implement - Should use only yhe interface? how can to create new instance of unknown Class.
+    }
+
+    private void reset_nodes(DirectedWeightedGraph g){
+        Iterator<NodeData> it = g.nodeIter();
+        while (it.hasNext()) {
+            NodeData node = it.next();
+            node.setTag(0);
+            node.setWeight(0);
+        }
+    }
+
     private boolean exist_path(DirectedWeightedGraph g, NodeData src, NodeData dst){
         if(g.getEdge(src.getKey(), dst.getKey()) != null){
+            dst.setTag(1);
             return true;
         }
         Iterator<EdgeData> it = g.edgeIter(src.getKey());
@@ -80,7 +118,15 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        // TODO: validate the inputs
+        Dijkstra(this.graph, src);
+        NodeData d = this.graph.getNode(dest);
+
+        if(d.getTag() == Integer.MIN_VALUE) return -1;
+
+        this.reset_nodes(this.graph);
+
+        return d.getWeight();
     }
 
     /**
@@ -95,7 +141,65 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        return null;
+        // TODO: validate the inputs
+
+        DirectedWeightedGraph g = this.graph;
+
+        this.Dijkstra(g, src);
+
+        NodeData n = g.getNode(dest);
+        List<NodeData> l = new ArrayList<NodeData>();
+
+        if(n.getTag() == Integer.MIN_VALUE) // There is no path from src to dst
+            return null;
+
+        l.add(n);
+
+        while (n != g.getNode(src)) {
+            n = g.getNode(n.getTag());
+            if(n == null)
+                throw new RuntimeException(); // TODO: Change to more indicative exception.
+
+            l.add(0, n);
+        }
+
+        this.reset_nodes(g);
+
+        return l;
+    }
+
+    /**
+     * TODO:
+     * @param g
+     * @param src
+     */
+    private void Dijkstra(DirectedWeightedGraph g, int src){
+        PriorityQueue<NodeData> q = new PriorityQueue<>(
+                Comparator.comparingDouble(NodeData::getWeight));
+
+        Iterator<NodeData> it_n = g.nodeIter();
+        while (it_n.hasNext()){
+            NodeData n = it_n.next();
+            n.setWeight(Double.MAX_VALUE);
+            n.setTag(Integer.MIN_VALUE);
+            q.add(n);
+        }
+
+        g.getNode(src).setWeight(0);
+
+        while (!q.isEmpty()){
+            NodeData u = q.poll();
+            Iterator<EdgeData> it_e = g.edgeIter(u.getKey());
+            while (it_e.hasNext()){
+                EdgeData e = it_e.next();
+                NodeData v = g.getNode(e.getDest());
+                double alt = u.getWeight() + e.getWeight();
+                if(alt < v.getWeight()){
+                    v.setWeight(alt);
+                    v.setTag(u.getKey()); // Save the key of the previous node.
+                }
+            }
+        }
     }
 
     /**
