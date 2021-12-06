@@ -1,7 +1,9 @@
 package api;
 
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.function.Consumer;
 
 public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
     private HashMap<Integer, NodeData> nodes;
@@ -96,7 +98,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public Iterator<NodeData> nodeIter() {
-        return null;
+        return new NodeIterator();
     }
 
     /**
@@ -119,7 +121,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        return null;
+        return new EdgeIterator(node_id);
     }
 
     /**
@@ -135,13 +137,17 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
         if(!this.nodes.containsKey(key)){
             return null;
         }
+        removeEdgesForNode(key);
+        this.mc_counter++; // TODO: check if need to increase also for every node that we deleted
+        return this.nodes.remove(key);
+    }
+
+    private void removeEdgesForNode(int key) {
         if(this.edges_src.containsKey(key)){
             e_counter = e_counter - this.edges_src.get(key).size();
             this.edges_src.remove(key);
             this.edges_dest.remove(key);
         }
-        this.mc_counter++; // TODO: check if need to increase also for every node that we deleted
-        return this.nodes.remove(key);
     }
 
     /**
@@ -194,4 +200,138 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
     public int getMC() {
         return this.mc_counter;
     }
+
+    private class NodeIterator implements Iterator<NodeData>{
+        int mc;
+        NodeData curr;
+        Iterator<NodeData> it;
+
+        public NodeIterator(){
+            this.mc = mc_counter;
+            this.it = nodes.values().iterator();
+            this.curr = null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return this.it.hasNext();
+        }
+
+        @Override
+        public NodeData next() {
+            this.check_mc();
+            this.curr = this.it.next();
+            return this.curr;
+        }
+
+        @Override
+        public void remove() {
+            this.check_mc();
+            removeEdgesForNode(this.curr.getKey()); // Delete the edges of the node.
+            it.remove(); // Delete the node with the HashMap iterator.
+            this.mc++; // Increase the iterator changes counter.
+
+            mc_counter++; // Increase the graph changes counter.
+        }
+
+        private void check_mc(){
+            if (this.mc != mc_counter){
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
+
+    private class EdgeIterator implements Iterator<EdgeData>{
+        int mc;
+        EdgeData curr;
+        Iterator<EdgeData> it;
+
+        public EdgeIterator(int node_key){
+            this.mc = mc_counter;
+            this.it = edges_src.get(node_key).values().iterator();
+            this.curr = null;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return this.it.hasNext();
+        }
+
+        @Override
+        public EdgeData next() {
+            this.check_mc();
+            this.curr = this.it.next();
+            return this.curr;
+        }
+
+        @Override
+        public void remove() {
+            this.check_mc();
+            it.remove(); // Delete the edge with the HashMap iterator from the edges_src.
+            this.mc++; // Increase the iterator changes counter.
+            edges_dest.get(this.curr.getDest()).remove(this.curr.getSrc());
+
+            mc_counter++; // Increase the graph changes counter.
+        }
+
+        private void check_mc(){
+            if (this.mc != mc_counter){
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
+
+    private class AllEdgesIterator implements Iterator<EdgeData>{
+        int mc;
+        int curr_it;
+        Iterator<EdgeData> it[];
+        EdgeData curr_edge;
+
+        public AllEdgesIterator(){
+            this.mc = mc_counter;
+            this.curr_edge = null;
+            this.it = new EdgeIterator[edges_src.size()]; // Create list of node iterators.
+            int i=0;
+            for (int key: edges_src.keySet()) {
+                this.it[i] = edgeIter(key);
+                i++;
+            }
+        }
+
+        @Override
+        public boolean hasNext() {
+            while (curr_it < this.it.length && !it[curr_it].hasNext()){
+                curr_it++;
+            }
+            return this.it[curr_it].hasNext();
+        }
+
+        @Override
+        public EdgeData next() {
+            this.check_mc();
+            while (curr_it < this.it.length && !it[curr_it].hasNext()){
+                curr_it++;
+            }
+            this.curr_edge = this.it[curr_it].next();
+            return this.curr_edge;
+        }
+
+        @Override
+        public void remove() {
+            this.check_mc();
+            it[curr_it].remove(); // Delete the edge with the HashMap iterator from the edges_src.
+            this.mc++; // Increase the iterator changes counter.
+
+            edges_dest.get(this.curr_edge.getDest()).remove(this.curr_edge.getSrc());
+            mc_counter++; // Increase the graph changes counter.
+        }
+
+        private void check_mc(){
+            if (this.mc != mc_counter){
+                throw new ConcurrentModificationException();
+            }
+        }
+    }
+
+
 }
