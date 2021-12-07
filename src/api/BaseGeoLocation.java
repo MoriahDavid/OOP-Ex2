@@ -12,6 +12,12 @@ public class BaseGeoLocation implements api.GeoLocation {
         this._z = z;
     }
 
+    public BaseGeoLocation(double x, double y){
+        this._x = x;
+        this._y = y;
+        this._z = 0;
+    }
+
     @Override
     public double x() {
         return this._x;

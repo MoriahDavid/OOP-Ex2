@@ -32,8 +32,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public DirectedWeightedGraph copy() {
-        DirectedWeightedGraph new_g = new BaseDirectedWeightedGraph(); // TODO: create generic
-        return null;
+        DirectedWeightedGraph new_g = new BaseDirectedWeightedGraph(this.graph);
+        return new_g;
     }
 
     /**
@@ -45,7 +45,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     @Override
     public boolean isConnected() {
 
-        DirectedWeightedGraph g = this.copy();
+        BaseDirectedWeightedGraph g = (BaseDirectedWeightedGraph) this.copy();
         this.reset_nodes(g);
 
         Iterator<NodeData> it = g.nodeIter();
@@ -60,7 +60,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             if (!exist_path(g, start_node, node))
                 return false;
         }
-        this.transpose_graph(g);
+
+        g.transpose();
 
         this.reset_nodes(g);
 
@@ -78,10 +79,6 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         }
 
         return true;
-    }
-
-    private void transpose_graph(DirectedWeightedGraph g){
-        // TODO: Implement - Should use only yhe interface? how can to create new instance of unknown Class.
     }
 
     private void reset_nodes(DirectedWeightedGraph g){

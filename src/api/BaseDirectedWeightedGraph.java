@@ -17,6 +17,14 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
         this.edges_dest = new HashMap<Integer, HashMap<Integer, EdgeData>>();
     }
 
+    public BaseDirectedWeightedGraph(DirectedWeightedGraph g){
+        // TODO: implement
+    }
+
+    public void transpose(){
+        // TODO: implement
+    }
+
     /**
      * returns the node_data by the node_id,
      *
@@ -301,7 +309,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
 
         @Override
         public boolean hasNext() {
-            while (curr_it < this.it.length && !it[curr_it].hasNext()){
+            while (curr_it < this.it.length-1 && !it[curr_it].hasNext()){
                 curr_it++;
             }
             return this.it[curr_it].hasNext();
