@@ -2,6 +2,7 @@ package api;
 
 import com.google.gson.*;
 
+import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -37,8 +38,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      * @return
      */
     @Override
-    public DirectedWeightedGraph copy() {
-        DirectedWeightedGraph new_g = new BaseDirectedWeightedGraph(this.graph);
+    public BaseDirectedWeightedGraph copy() {
+        BaseDirectedWeightedGraph new_g = new BaseDirectedWeightedGraph(this.graph);
         return new_g;
     }
 
@@ -51,7 +52,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     @Override
     public boolean isConnected() {
 
-        BaseDirectedWeightedGraph g = (BaseDirectedWeightedGraph) this.copy();
+        BaseDirectedWeightedGraph g = this.copy();
         this.reset_nodes(g);
 
         Iterator<NodeData> it = g.nodeIter();
@@ -260,7 +261,47 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        return null;
+        int j = 0;
+        List<NodeData> path_nodes = new ArrayList<>();
+        if(cities.size() == 0){
+            return null;
+        }
+        for(int i = 0; i < cities.size(); i++){ //Set 0 in the node tag.
+            cities.get(i).setTag(0);
+        }
+        NodeData rand_n = getRandomNode(cities); //Choose node in random.
+        NodeData n = closestNode(rand_n, cities); //Find the closest node from rand node.
+        n.setTag(1); //Change the tag of the node that we checked its closest node.
+        path_nodes.add(j, n);
+        j++;
+        for(int i = 0; i < cities.size()-1; i++){
+            n = closestNode(n, cities);
+            path_nodes.add(j, n);
+            j++;
+        }
+        return path_nodes;
+    }
+
+    private NodeData getRandomNode(List<NodeData> ln){
+        if(ln.size() == 0){
+            return null;
+        }
+        int x = new Random().nextInt(ln.size());
+        return ln.get(x);
+    }
+
+    private NodeData closestNode(NodeData n1, List<NodeData> ln){
+        double c = Integer.MAX_VALUE;
+        NodeData closestNode = null; // The closest node to n1.
+        for(int i = 0; i < ln.size(); i++){
+            if(this.graph.getEdge(n1.getKey(), ln.get(i).getKey()) != null && ln.get(i).getTag()==0) { // If this edge exist and if we visit this node before.
+                if (this.graph.getEdge(n1.getKey(), ln.get(i).getKey()).getWeight() < c) { // If the weight (dist) is smaller.
+                    c = this.graph.getEdge(n1.getKey(), ln.get(i).getKey()).getWeight();
+                    closestNode = ln.get(i);
+                }
+            }
+        }
+        return closestNode;
     }
 
     /**
