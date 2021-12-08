@@ -1,9 +1,6 @@
 package gui;
 
-import api.BaseDirectedWeightedGraph;
-import api.DirectedWeightedGraph;
-import api.BaseGeoLocation;
-import api.BaseNodeData;
+import api.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,12 +15,18 @@ public class main {
         frame.setLayout(new GridBagLayout());
         GridBagConstraints c = new GridBagConstraints();
 
+        BaseDirectedWeightedGraphAlgo a = new BaseDirectedWeightedGraphAlgo();
+
+        a.load("data\\G1.json");
+
+
         //create an object
-        DirectedWeightedGraph g = new BaseDirectedWeightedGraph();
+//        DirectedWeightedGraph g = new BaseDirectedWeightedGraph();
+        DirectedWeightedGraph g = a.getGraph();
         int key1 = 100000;
-        g.addNode(new BaseNodeData(key1, 0, "", 0, new BaseGeoLocation(1, 1,0)));
-        g.addNode(new BaseNodeData(2, 0, "", 0, new BaseGeoLocation(3, 3,0)));
-        g.connect(key1,2, 10);
+//        g.addNode(new BaseNodeData(key1, 0, "", 0, new BaseGeoLocation(1, 1,0)));
+//        g.addNode(new BaseNodeData(2, 0, "", 0, new BaseGeoLocation(3, 3,0)));
+//        g.connect(key1,2, 10);
 //        g.connect(2, key1, 30);
         GraphDraw draw = new GraphDraw(g);
 

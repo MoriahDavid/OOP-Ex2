@@ -18,6 +18,14 @@ public class BaseGeoLocation implements api.GeoLocation {
         this._z = 0;
     }
 
+    public BaseGeoLocation(String s){
+        String[] v = s.split(",");
+        // TODO: check validatn
+        this._x = Double.parseDouble(v[0]);
+        this._y = Double.parseDouble(v[1]);
+        this._z = Double.parseDouble(v[2]);
+    }
+
     @Override
     public double x() {
         return this._x;

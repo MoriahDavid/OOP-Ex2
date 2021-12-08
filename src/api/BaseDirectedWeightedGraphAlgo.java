@@ -1,5 +1,11 @@
 package api;
 
+import com.google.gson.*;
+
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
 import java.util.*;
 
 public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphAlgorithms{
@@ -121,9 +127,10 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
 
         if(d.getTag() == Integer.MIN_VALUE) return -1;
 
+        double r = d.getWeight();
         this.reset_nodes(this.graph);
 
-        return d.getWeight();
+        return r;
     }
 
     /**
@@ -167,6 +174,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
 
     /**
      * TODO:
+     * https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
      * @param g
      * @param src
      */
@@ -193,6 +201,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
                 double alt = u.getWeight() + e.getWeight();
                 if(alt < v.getWeight()){
                     v.setWeight(alt);
+                    if(q.remove(v)) // In order to update the order of the queue.
+                        q.add(v);
                     v.setTag(u.getKey()); // Save the key of the previous node.
                 }
             }
@@ -207,7 +217,35 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public NodeData center() {
-        return null;
+        DirectedWeightedGraph g = this.copy();
+        Iterator<NodeData> i = g.nodeIter();
+
+        double max_w = Double.MIN_VALUE;
+
+        while(i.hasNext()){
+            NodeData n_src = i.next();
+            Iterator<NodeData> j = g.nodeIter();
+            while (j.hasNext()){
+                NodeData n_dst = j.next();
+                if(i==j) continue;
+                double w = this.shortestPathDist(n_src.getKey(), n_dst.getKey());
+                if(w > max_w){
+                    max_w = w;
+                    n_src.setWeight(w);
+                }
+            }
+        }
+
+        Iterator<NodeData> it = g.nodeIter();
+        NodeData min_node = it.next();;
+        while (it.hasNext()){
+            NodeData n = it.next();
+            if(n.getWeight() < min_node.getWeight()){
+                min_node = n;
+            }
+        }
+        return min_node;
+
     }
 
     /**
@@ -246,6 +284,57 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public boolean load(String file) {
-        return false;
+        try {
+            FileReader fr = new FileReader(file);
+            BufferedReader br = new BufferedReader(fr);
+            Gson gson = new Gson();
+
+            GsonBuilder gsonBuilder = new GsonBuilder();
+
+            gsonBuilder.registerTypeAdapter(BaseDirectedWeightedGraph.class, graphDeserializer);
+
+            Gson customGson = gsonBuilder.create();
+            this.graph = customGson.fromJson(br, BaseDirectedWeightedGraph.class);
+            return true;
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+
+    }
+
+    // change serialization for specific types
+    JsonDeserializer<DirectedWeightedGraph> graphDeserializer = new JsonDeserializer<DirectedWeightedGraph>() {
+        @Override
+        public DirectedWeightedGraph deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
+            JsonObject jsonObject = json.getAsJsonObject();
+
+            BaseDirectedWeightedGraph graph = new BaseDirectedWeightedGraph();
+
+            JsonArray j_n = jsonObject.getAsJsonArray("Nodes");
+            for (JsonElement n: j_n) {
+                graph.addNode(new BaseNodeData(n.getAsJsonObject().get("id").getAsInt(),
+                        0,"",0,
+                        new BaseGeoLocation(n.getAsJsonObject().get("pos").getAsString())));
+            }
+
+            JsonArray j_e = jsonObject.getAsJsonArray("Edges");
+            for (JsonElement e: j_e) {
+                graph.connect(e.getAsJsonObject().get("src").getAsInt(),
+                        e.getAsJsonObject().get("dest").getAsInt(),
+                        e.getAsJsonObject().get("w").getAsDouble());
+            }
+
+            return graph;
+        }
+    };
+
+    public static void main(String[] args){
+        BaseDirectedWeightedGraphAlgo a = new BaseDirectedWeightedGraphAlgo();
+
+        a.load("data\\G1.json");
+        System.out.println(a.shortestPath(0,4));
+        System.out.println(a.center().getKey());
     }
 }

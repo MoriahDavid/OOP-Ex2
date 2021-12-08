@@ -38,14 +38,21 @@ public class GraphDraw extends JPanel implements ActionListener {
 
     public void set_scale(){
         double max_x=Double.MIN_VALUE, max_y=Double.MIN_VALUE;
+        double min_x=Double.MAX_VALUE, min_y=Double.MAX_VALUE;
 
         for (Iterator<NodeData> it = this.graph.nodeIter(); it.hasNext(); ) {
             NodeData n = it.next();
             if(n.getLocation().x() > max_x){
                 max_x = (int) n.getLocation().x();
             }
+            else if(n.getLocation().x() < min_x){
+                min_x = (int) n.getLocation().x();
+            }
             if(n.getLocation().y() > max_y){
                 max_y = (int) n.getLocation().y();
+            }
+            else if(n.getLocation().y() < min_y){
+                min_y = (int) n.getLocation().y();
             }
         }
         this.scale_x = max_x / (this.getWidth()-100);

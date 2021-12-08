@@ -1,28 +1,55 @@
 package api;
 
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.Iterator;
+import com.google.gson.*;
+
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.*;
 import java.util.function.Consumer;
 
-public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
+public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
     private HashMap<Integer, NodeData> nodes;
     private HashMap<Integer, HashMap<Integer, EdgeData>> edges_src, edges_dest;
     private int e_counter = 0;
     private int mc_counter = 0;
 
-    public BaseDirectedWeightedGraph(){
+    public BaseDirectedWeightedGraph() {
         this.nodes = new HashMap<Integer, NodeData>();
         this.edges_src = new HashMap<Integer, HashMap<Integer, EdgeData>>();
         this.edges_dest = new HashMap<Integer, HashMap<Integer, EdgeData>>();
     }
 
-    public BaseDirectedWeightedGraph(DirectedWeightedGraph g){
-        // TODO: implement
+    public BaseDirectedWeightedGraph(DirectedWeightedGraph g) {
+        this();
+        Iterator<NodeData> it_n = g.nodeIter();
+        while (it_n.hasNext()) {
+            NodeData n = it_n.next();
+            this.addNode(new BaseNodeData(n.getKey(), n.getTag(), "" + n.getInfo(), n.getWeight(), n.getLocation()));
+        }
+        Iterator<EdgeData> it_e = g.edgeIter();
+        while (it_e.hasNext()) {
+            EdgeData e = it_e.next();
+            this.connect(e.getSrc(), e.getDest(), e.getWeight());
+            EdgeData e_new = this.getEdge(e.getSrc(), e.getDest());
+            e_new.setInfo("" + e.getInfo());
+            e_new.setTag(e.getTag());
+        }
     }
 
-    public void transpose(){
-        // TODO: implement
+    public void transpose() {
+        List<EdgeData> old_edges = new ArrayList<>();
+        Iterator<EdgeData> it = this.edgeIter();
+        while (it.hasNext()) {
+            EdgeData e = it.next();
+            old_edges.add(e);
+            it.remove();
+        }
+        for (EdgeData e : old_edges) {
+            this.connect(e.getDest(), e.getSrc(), e.getWeight());
+        }
     }
 
     /**
@@ -46,7 +73,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public EdgeData getEdge(int src, int dest) {
-        if(this.edges_src.containsKey(src)){
+        if (this.edges_src.containsKey(src)) {
             return this.edges_src.get(src).getOrDefault(dest, null);
         }
         return null;
@@ -75,18 +102,18 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public void connect(int src, int dest, double w) {
-        if(this.getNode(src) == null || this.getNode(dest) == null){
+        if (this.getNode(src) == null || this.getNode(dest) == null) {
             // TODO: Handel situation that the nodes doesnt exist
             return;
         }
 
         HashMap<Integer, EdgeData> src_e = this.edges_src.getOrDefault(src, null);
-        if(src_e == null){
+        if (src_e == null) {
             src_e = new HashMap<Integer, EdgeData>();
             this.edges_src.put(src, src_e); // Create new HashMap for this src node.
         }
         HashMap<Integer, EdgeData> dest_e = this.edges_dest.getOrDefault(dest, null);
-        if(dest_e == null){
+        if (dest_e == null) {
             dest_e = new HashMap<Integer, EdgeData>();
             this.edges_dest.put(dest, dest_e); // Create new HashMap for this dest node.
         }
@@ -143,7 +170,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public NodeData removeNode(int key) {
-        if(!this.nodes.containsKey(key)){
+        if (!this.nodes.containsKey(key)) {
             return null;
         }
         removeEdgesForNode(key);
@@ -152,7 +179,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
     }
 
     private void removeEdgesForNode(int key) {
-        if(this.edges_src.containsKey(key)){
+        if (this.edges_src.containsKey(key)) {
             e_counter = e_counter - this.edges_src.get(key).size();
             this.edges_src.remove(key);
             this.edges_dest.remove(key);
@@ -169,7 +196,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
      */
     @Override
     public EdgeData removeEdge(int src, int dest) {
-        if(this.getEdge(src, dest) == null){
+        if (this.getEdge(src, dest) == null) {
             return null;
         }
         this.edges_src.get(src).remove(dest);
@@ -210,12 +237,12 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
         return this.mc_counter;
     }
 
-    private class NodeIterator implements Iterator<NodeData>{
+    private class NodeIterator implements Iterator<NodeData> {
         int mc;
         NodeData curr;
         Iterator<NodeData> it;
 
-        public NodeIterator(){
+        public NodeIterator() {
             this.mc = mc_counter;
             this.it = nodes.values().iterator();
             this.curr = null;
@@ -243,19 +270,19 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
             mc_counter++; // Increase the graph changes counter.
         }
 
-        private void check_mc(){
-            if (this.mc != mc_counter){
+        private void check_mc() {
+            if (this.mc != mc_counter) {
                 throw new ConcurrentModificationException();
             }
         }
     }
 
-    private class EdgeIterator implements Iterator<EdgeData>{
+    private class EdgeIterator implements Iterator<EdgeData> {
         int mc;
         EdgeData curr;
         Iterator<EdgeData> it;
 
-        public EdgeIterator(int node_key){
+        public EdgeIterator(int node_key) {
             this.mc = mc_counter;
             this.it = edges_src.get(node_key).values().iterator();
             this.curr = null;
@@ -283,25 +310,25 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
             mc_counter++; // Increase the graph changes counter.
         }
 
-        private void check_mc(){
-            if (this.mc != mc_counter){
+        private void check_mc() {
+            if (this.mc != mc_counter) {
                 throw new ConcurrentModificationException();
             }
         }
     }
 
-    private class AllEdgesIterator implements Iterator<EdgeData>{
+    private class AllEdgesIterator implements Iterator<EdgeData> {
         int mc;
         int curr_it;
         Iterator<EdgeData> it[];
         EdgeData curr_edge;
 
-        public AllEdgesIterator(){
+        public AllEdgesIterator() {
             this.mc = mc_counter;
             this.curr_edge = null;
             this.it = new EdgeIterator[edges_src.size()]; // Create list of node iterators.
-            int i=0;
-            for (int key: edges_src.keySet()) {
+            int i = 0;
+            for (int key : edges_src.keySet()) {
                 this.it[i] = edgeIter(key);
                 i++;
             }
@@ -309,7 +336,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
 
         @Override
         public boolean hasNext() {
-            while (curr_it < this.it.length-1 && !it[curr_it].hasNext()){
+            while (curr_it < this.it.length - 1 && !it[curr_it].hasNext()) {
                 curr_it++;
             }
             return this.it[curr_it].hasNext();
@@ -318,7 +345,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
         @Override
         public EdgeData next() {
             this.check_mc();
-            while (curr_it < this.it.length && !it[curr_it].hasNext()){
+            while (curr_it < this.it.length && !it[curr_it].hasNext()) {
                 curr_it++;
             }
             this.curr_edge = this.it[curr_it].next();
@@ -335,8 +362,8 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph{
             mc_counter++; // Increase the graph changes counter.
         }
 
-        private void check_mc(){
-            if (this.mc != mc_counter){
+        private void check_mc() {
+            if (this.mc != mc_counter) {
                 throw new ConcurrentModificationException();
             }
         }
