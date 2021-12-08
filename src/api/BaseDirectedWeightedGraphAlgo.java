@@ -270,14 +270,16 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             cities.get(i).setTag(0);
         }
         NodeData rand_n = getRandomNode(cities); //Choose node in random.
+        rand_n.setTag(1);
         NodeData n = closestNode(rand_n, cities); //Find the closest node from rand node.
         n.setTag(1); //Change the tag of the node that we checked its closest node.
-        path_nodes.add(j, rand_n);
-        j++
+        path_nodes.add(j, rand_n); //Add to the final list.
+        j++;
         path_nodes.add(j, n);
         j++;
         for(int i = j; i < cities.size(); i++){
             n = closestNode(n, cities);
+            n.setTag(1);
             path_nodes.add(j, n);
             j++;
         }
