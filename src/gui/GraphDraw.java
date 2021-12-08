@@ -24,8 +24,8 @@ public class GraphDraw extends JPanel implements ActionListener {
     private Color edgeColor = Color.PINK;
 
     private DirectedWeightedGraph graph;
-//    private int last_mc;
-    private double scale_x, scale_y;
+    private double max_x=Double.MIN_VALUE, max_y=Double.MIN_VALUE;
+    private double min_x=Double.MAX_VALUE, min_y=Double.MAX_VALUE;
 
     private HashMap<NodeData, NodeShape> m;
 
@@ -37,26 +37,22 @@ public class GraphDraw extends JPanel implements ActionListener {
     }
 
     public void set_scale(){
-        double max_x=Double.MIN_VALUE, max_y=Double.MIN_VALUE;
-        double min_x=Double.MAX_VALUE, min_y=Double.MAX_VALUE;
 
         for (Iterator<NodeData> it = this.graph.nodeIter(); it.hasNext(); ) {
             NodeData n = it.next();
             if(n.getLocation().x() > max_x){
-                max_x = (int) n.getLocation().x();
+                max_x = n.getLocation().x();
             }
             else if(n.getLocation().x() < min_x){
-                min_x = (int) n.getLocation().x();
+                min_x = n.getLocation().x();
             }
             if(n.getLocation().y() > max_y){
-                max_y = (int) n.getLocation().y();
+                max_y = n.getLocation().y();
             }
             else if(n.getLocation().y() < min_y){
-                min_y = (int) n.getLocation().y();
+                min_y = n.getLocation().y();
             }
         }
-        this.scale_x = max_x / (this.getWidth()-100);
-        this.scale_y = max_y / (this.getHeight()-100);
     }
 
     @Override
@@ -84,11 +80,15 @@ public class GraphDraw extends JPanel implements ActionListener {
     }
 
     private int convertLocationX(double x){
-        return (int) (x/this.scale_x);
+        return (int) map(x, min_x, max_x, 50, this.getWidth()-50);
     }
 
     private int convertLocationY(double y){
-        return (int) (y/this.scale_y);
+        return (int) map(y, min_y, max_y, 50, this.getHeight()-50);
+    }
+
+    private double map(double x, double in_min, double in_max, double out_min, double out_max) {
+        return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
     }
 
     private void drawNode(Graphics2D g2d, NodeData node){
@@ -108,7 +108,7 @@ public class GraphDraw extends JPanel implements ActionListener {
         NodeShape ns1 = m.get(this.graph.getNode(edge.getSrc()));
         NodeShape ns2 = m.get(this.graph.getNode(edge.getDest()));
 
-        EdgeShape e = new EdgeShape(""+edge.getWeight(), ns1.getCenter(), ns2.getCenter(), ns2.getWidth()/2);
+        EdgeShape e = new EdgeShape((""+edge.getWeight()).substring(0,6), ns1.getCenter(), ns2.getCenter(), ns2.getWidth()/2);
 
         e.setBorder(null);
         e.setBounds(0,0, this.getWidth(), this.getHeight());
