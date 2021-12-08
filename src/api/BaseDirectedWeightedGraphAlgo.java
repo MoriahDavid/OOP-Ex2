@@ -191,6 +191,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         }
 
         g.getNode(src).setWeight(0);
+        q.remove(g.getNode(src));
+        q.add(g.getNode(src));
 
         while (!q.isEmpty()){
             NodeData u = q.poll();
