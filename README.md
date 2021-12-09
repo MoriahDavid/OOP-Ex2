@@ -48,10 +48,6 @@ The methods: <br />
 **getRandomNode-** Return node in random. <br />
 **closestNode-** Return the closest node to some node by passing all the nodes in the list and calculate the total weight. <br />
 
-**save-**
-**load-**
-**graphDeserializer-**
-
  <br />
 
 ### :large_blue_diamond: Algorithms Results
