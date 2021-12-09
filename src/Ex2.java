@@ -1,8 +1,12 @@
+import api.BaseDirectedWeightedGraphAlgo;
 import api.DirectedWeightedGraph;
 import api.DirectedWeightedGraphAlgorithms;
+import gui.GuiController;
+
+import java.io.File;
 
 /**
- * This class is the main class for Ex2 - your implementation will be tested using this class.
+ * This class is the main class for Ex2
  */
 public class Ex2 {
     /**
@@ -11,10 +15,10 @@ public class Ex2 {
      * @return
      */
     public static DirectedWeightedGraph getGrapg(String json_file) {
-        DirectedWeightedGraph ans = null; // TODO: !!!!
-        // ****** Add your code here ******
-        //
-        // ********************************
+        DirectedWeightedGraphAlgorithms algo = getGrapgAlgo(json_file);
+
+        DirectedWeightedGraph ans = algo.getGraph();
+
         return ans;
     }
     /**
@@ -23,10 +27,9 @@ public class Ex2 {
      * @return
      */
     public static DirectedWeightedGraphAlgorithms getGrapgAlgo(String json_file) {
-        DirectedWeightedGraphAlgorithms ans = null;
-        // ****** Add your code here ******
-        //
-        // ********************************
+        DirectedWeightedGraphAlgorithms ans = new BaseDirectedWeightedGraphAlgo();
+        ans.load(json_file);
+
         return ans;
     }
     /**
@@ -35,9 +38,22 @@ public class Ex2 {
      *
      */
     public static void runGUI(String json_file) {
-        DirectedWeightedGraphAlgorithms alg = getGrapgAlgo(json_file);
-        // ****** Add your code here ******
-        //
-        // ********************************
+        DirectedWeightedGraphAlgorithms a = getGrapgAlgo(json_file);
+
+        GuiController g = new GuiController(a);
+        g.show();
+    }
+
+    public static void main(String[] args){
+        if(args.length == 1){
+            if(!new File(args[0]).exists()) {
+                System.out.println("Error: File '" + args[0] + "' not Exist.");
+                return;
+            }
+            runGUI(args[0]);
+        }
+        else{
+            System.out.println("Usage:  java -jar Ex2.jar {graph_json_path}.");
+        }
     }
 }

@@ -330,7 +330,8 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
             this.nodes = new ArrayList<>(edges_src.keySet());
 
             this.curr_it = 0;
-            this.it = edgeIter(this.nodes.remove(0));
+            if(this.nodes.size() > 0)
+                this.it = edgeIter(this.nodes.remove(0));
         }
 
         @Override

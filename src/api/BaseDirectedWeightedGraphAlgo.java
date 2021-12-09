@@ -13,6 +13,10 @@ import java.util.*;
 public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphAlgorithms{
     private DirectedWeightedGraph graph;
 
+    public BaseDirectedWeightedGraphAlgo(){
+        this.graph= new BaseDirectedWeightedGraph();
+    }
+
     /**
      * Inits the graph on which this set of algorithms operates on.
      *
@@ -402,7 +406,6 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             return true;
 
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
-            e.printStackTrace();
             return false;
         }
 
