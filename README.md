@@ -1,21 +1,21 @@
 ## Directed Weighted Graphs
 
 
-### Main Classes:
+### :large_blue_diamond: Main Classes:
 BaseNodeData- the main class for the nodes. <br />
 On this class we save for every node: key, tag, info, weight, location. <br />
 We create sets and gets methods. <br />
 
-#### BaseEdgeData- the main class for the edges.
+#### :black_medium_square: BaseEdgeData- the main class for the edges.
 On this class we save for every edge: tag, info, source-node, destination-node, weight. <br />
 We create sets and gets methods.
 
-#### BaseGeoLocation
+#### :black_medium_square: BaseGeoLocation
 In this class the X, Y, Z coordinates are displayed. <br />
 The instruction was that Z is always zero. <br />
 We have gets-methods in this class. <br />
 
-#### BaseDirectedWeightedGraph
+#### :black_medium_square: BaseDirectedWeightedGraph
 This class represents our directed weighted graph. <br />
 We create two HashMaps in HashMap and one regular HashMap: <br />
 
@@ -30,7 +30,7 @@ The first one is -nodes- represents our nodes on the graph. <br />
 In this class we implement these methods: transpose, getNode, getEdge, addNode, connect, nodeIter, edgeIter, removeNode, removeEdgesForNode, rempveEdge, nodeSize, edgeSize, getMC. <br />
 We also made three classes for Iterator: nodeIterator, edgeIterator- for specific node and AllEdgesIterator- for all the nodes on the graph. <br />
 
-#### BaseDirectedWeightedGraphAlgo
+#### :black_medium_square: BaseDirectedWeightedGraphAlgo
 In this class we have the main algorithms for graph. <br />
 The methods: <br />
 
