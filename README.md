@@ -52,13 +52,13 @@ save-
 load- 
 graphDeserializer- 
 
-### Algorithms Results
+### :large_blue_diamond: Algorithms Results
 Graph with 1000 nodes:
 Graph with 10,000 nodes:
 Graph with 100,000 nodes:
 Graph with 1,000,000 nodes:
 
-### GUI:
+### :large_blue_diamond: GUI:
 Download-
 Run-
 Use-
