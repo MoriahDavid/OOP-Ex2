@@ -81,7 +81,8 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
      */
     @Override
     public void addNode(NodeData n) {
-        // TODO: validate the inputs
+        if(n == null) return;
+
         this.nodes.put(n.getKey(), n);
 
         HashMap<Integer, EdgeData> src_e = new HashMap<Integer, EdgeData>();
@@ -103,8 +104,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
      */
     @Override
     public void connect(int src, int dest, double w) {
-        if (this.getNode(src) == null || this.getNode(dest) == null) {
-            // TODO: Handel situation that the nodes doesnt exist
+        if (this.getNode(src) == null || this.getNode(dest) == null || w < 0) {
             return;
         }
 
@@ -167,7 +167,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
             return null;
         }
         removeEdgesForNode(key);
-        this.mc_counter++; // TODO: check if need to increase also for every node that we deleted
+        this.mc_counter++;
         return this.nodes.remove(key);
     }
 

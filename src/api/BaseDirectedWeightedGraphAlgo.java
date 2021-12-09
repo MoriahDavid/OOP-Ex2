@@ -56,6 +56,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public boolean isConnected() {
+        if(this.graph.nodeSize()==0) return false;
 
         BaseDirectedWeightedGraph g = this.copy();
 
@@ -120,13 +121,14 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        // TODO: validate the inputs
-
         return shortestPathDist(this.copy(), src, dest);
     }
 
-    public double shortestPathDist(DirectedWeightedGraph g, int src, int dest) {
-        // TODO: validate the inputs
+    private double shortestPathDist(DirectedWeightedGraph g, int src, int dest) {
+        if (g.getNode(src) == null || g.getNode(dest) == null){
+            throw new IllegalArgumentException();
+        }
+
         Dijkstra(g, src);
         NodeData d = g.getNode(dest);
 
@@ -147,7 +149,9 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        // TODO: validate the inputs
+        if (this.graph.getNode(src) == null || this.graph.getNode(dest) == null){
+            throw new IllegalArgumentException();
+        }
 
         DirectedWeightedGraph g = this.copy();
 
@@ -164,7 +168,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         while (n != g.getNode(src)) {
             n = g.getNode(n.getTag());
             if(n == null)
-                throw new RuntimeException(); // TODO: Change to more indicative exception.
+                throw new RuntimeException();
 
             l.add(0, this.graph.getNode(n.getKey()));
         }
@@ -173,7 +177,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     }
 
     /**
-     * TODO:
+     * Running Dijkstra algorithm on the graph
      * https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
      * @param g
      * @param src
