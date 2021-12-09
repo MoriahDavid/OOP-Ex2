@@ -38,6 +38,19 @@ public class GraphDraw extends JPanel {
     private EdgeData lastClickedEdge;
     private int last_mc;
 
+    private boolean enable_drag_nodes = true;
+    private boolean show_edges_weight = true;
+
+    public void set_drag_nodes(boolean f){
+        this.enable_drag_nodes = f;
+    }
+    public boolean is_enabled_drag_nodes(){
+        return this.enable_drag_nodes;
+    }
+
+    public void set_show_edges_weight(boolean f){this.show_edges_weight = f;}
+    public boolean is_show_edges_weight(){return this.show_edges_weight;}
+
     public NodeData getLastNodeClicked(){
         return this.lastClickedNode;
     }
@@ -130,6 +143,14 @@ public class GraphDraw extends JPanel {
         return (int) map(y, min_y, max_y, 20, this.getHeight()-50);
     }
 
+    private double backConvertLocationX(double x){
+        return map(x, 20, this.getWidth()-50, min_x, max_x);
+    }
+
+    private double backConvertLocationY(double y){
+        return map(y, 20, this.getHeight()-50, min_y, max_y);
+    }
+
     private GeoLocation convertLocation(GeoLocation l){
         return new BaseGeoLocation(convertLocationX(l.x()), convertLocationY(l.y()));
     }
@@ -142,8 +163,9 @@ public class GraphDraw extends JPanel {
         NodeShape n = new NodeShape(""+node.getKey(), node);
         int width = get_node_size(n);
         n.setBounds(convertLocationX(node.getLocation().x()), convertLocationY(node.getLocation().y()), width, width);
-//        n.addActionListener(this);
+
         n.addMouseListener(new PopClickListener());
+        n.addMouseMotionListener(new PopClickListener());
         n.setMargin(new Insets(0,0,0,0));
         n.SetColorStroke(this.nodeColor);
 
@@ -157,15 +179,16 @@ public class GraphDraw extends JPanel {
         NodeShape ns2 = m.get(this.graph.getNode(edge.getDest()));
         if (ns1 == null || ns2 == null) return;
 
-        String t = String.format("%.5f", edge.getWeight());
+        String t = "";
+
+        if(this.show_edges_weight)
+            t = String.format("%.5f", edge.getWeight());
 
         EdgeShape e = new EdgeShape(t, ns1.getCenter(), ns2.getCenter(), ns2.getWidth()/2, edge);
 
         e.setBorder(null);
         e.setBounds(0,0, this.getWidth(), this.getHeight());
 
-//        e.addMouseListener(new PopClickListener());
-//        e.addActionListener(this);
         e.addMouseListener(new PopClickListener());
         e.setMargin(new Insets(0,0,0,0));
         e.SetColorFill(this.edgeColor);
@@ -196,62 +219,63 @@ public class GraphDraw extends JPanel {
         g2d.fillRect(0, 0, getWidth(), getHeight());
     }
 
-//    @Override
-//    public void actionPerformed(ActionEvent e) {
-//
-//        System.out.println(e);
-//        Object o = e.getSource();
-//        if(o instanceof NodeShape){
-//            this.lastClickedNode = ((NodeShape) o).get_node();
-//            System.out.println("its a node");
-//        }
-//        else if(o instanceof EdgeShape){
-//            this.lastClickedEdge = ((EdgeShape) o).get_edge();
-//            System.out.println("its a edge");
-//        }
-//    }
-
     private void delete_edge(EdgeData e){
         this.graph.removeEdge(e.getSrc(), e.getDest());
         this.repaint();
     }
-    private void delete_node(NodeData d){
-        this.graph.removeNode(d.getKey());
+    private void delete_node(NodeData n){
+        this.graph.removeNode(n.getKey());
         this.repaint();
     }
 
     class PopClickListener extends MouseAdapter {
-        public void mousePressed(MouseEvent e) {
-            if (e.isPopupTrigger()) {
-                System.out.println(e);
-                Object o = e.getSource();
-                if (o instanceof NodeShape) {
-//                this.lastClickedNode = ((NodeShape) o).get_node();
-                    doPopNode(e, ((NodeShape) o).get_node());
-                } else if (o instanceof EdgeShape) {
-//                this.lastClickedEdge = ((EdgeShape) o).get_edge();
-                    doPopEdge(e, ((EdgeShape) o).get_edge());
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            if(!enable_drag_nodes) return;
+            Object o = e.getSource();
+            if (o instanceof NodeShape) {
+                NodeShape s = ((NodeShape) o);
+                NodeData n = s.get_node();
+
+                if(Math.abs(e.getX()) > 3 || Math.abs(e.getY()) > 3){
+                    int new_x = s.getX()+e.getX()-s.getWidth()/2;
+                    int new_y = s.getY()+e.getY()-s.getWidth()/2;
+                    n.setLocation(new BaseGeoLocation(backConvertLocationX(new_x), backConvertLocationY(new_y)));
+                    s.setLocation(new_x, new_y);
+                    repaint();
                 }
             }
         }
 
-        public void mouseReleased(MouseEvent e) {
-            mousePressed(e);
-        }
+        @Override
+        public void mousePressed(MouseEvent e) {
 
+        }
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            set_update();
+            repaint();
+
+            if (e.isPopupTrigger()) {
+                Object o = e.getSource();
+                if (o instanceof NodeShape) { doPopNode(e, ((NodeShape) o).get_node());}
+                else if (o instanceof EdgeShape) { doPopEdge(e, ((EdgeShape) o).get_edge()); }
+            }
+        }
         private void doPopNode(MouseEvent e, NodeData n) {
-            PopUpNode menu = new PopUpNode(graph, n);
+            PopUpNode menu = new PopUpNode(graph, n, e);
             menu.show(e.getComponent(), e.getX(), e.getY());
         }
-
         private void doPopEdge(MouseEvent e, EdgeData ed) {
             PopUpEdge menu = new PopUpEdge(graph, ed);
             menu.show(e.getComponent(), e.getX(), e.getY());
         }
     }
+
     class PopUpNode extends JPopupMenu {
         JMenuItem anItem;
-        public PopUpNode(DirectedWeightedGraph g, NodeData n) {
+        public PopUpNode(DirectedWeightedGraph g, NodeData n, MouseEvent e) {
             anItem = new JMenuItem("Delete Node");
             anItem.addActionListener((event) -> delete_node(n));
             add(anItem);
@@ -260,17 +284,8 @@ public class GraphDraw extends JPanel {
     class PopUpEdge extends JPopupMenu {
         JMenuItem anItem;
         public PopUpEdge(DirectedWeightedGraph g, EdgeData edge) {
-//            this.addPopupMenuListener(new PopupMenuListener() {
-//                @Override
-//                public void popupMenuWillBecomeInvisible(PopupMenuEvent arg0) {}
-//                @Override public void popupMenuWillBecomeVisible(PopupMenuEvent arg0) {}
-//                @Override public void popupMenuCanceled(PopupMenuEvent arg0) {}
-//            });
-
             anItem = new JMenuItem("Delete Edge");
             anItem.addActionListener((event) -> delete_edge(edge));
-            add(anItem);
-            anItem = new JMenuItem("Change Wight");
             add(anItem);
         }
     }

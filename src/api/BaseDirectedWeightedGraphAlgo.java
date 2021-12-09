@@ -65,7 +65,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             if(node.getTag() == 1)
                 continue;
 
-            if(this.shortestPathDist(start_node.getKey(), node.getKey()) == -1){
+            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1){
                 return false;
             }
 //            if (!exist_path(g, start_node, node))
@@ -86,7 +86,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             if(node.getTag() == 1)
                 continue;
 
-            if(this.shortestPathDist(start_node.getKey(), node.getKey()) == -1){
+            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1){
                 return false;
             }
 
@@ -133,13 +133,19 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     @Override
     public double shortestPathDist(int src, int dest) {
         // TODO: validate the inputs
-        Dijkstra(this.graph, src);
-        NodeData d = this.graph.getNode(dest);
+
+        return shortestPathDist(this.copy(), src, dest);
+    }
+
+    public double shortestPathDist(DirectedWeightedGraph g, int src, int dest) {
+        // TODO: validate the inputs
+        Dijkstra(g, src);
+        NodeData d = g.getNode(dest);
 
         if(d.getTag() == Integer.MIN_VALUE) return -1;
 
         double r = d.getWeight();
-        this.reset_nodes(this.graph);
+        this.reset_nodes(g);
 
         return r;
     }
@@ -230,18 +236,21 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public NodeData center() {
+        if(!isConnected()){ // TODO: maybe can fix the algo that include this check instead of running it twice;
+            return null;
+        }
         DirectedWeightedGraph g = this.copy();
         Iterator<NodeData> i = g.nodeIter();
 
-        double max_w = Double.MIN_VALUE;
 
         while(i.hasNext()){
             NodeData n_src = i.next();
             Iterator<NodeData> j = g.nodeIter();
+            double max_w = Double.MIN_VALUE;
             while (j.hasNext()){
                 NodeData n_dst = j.next();
                 if(i==j) continue;
-                double w = this.shortestPathDist(n_src.getKey(), n_dst.getKey());
+                double w = this.shortestPathDist(this.copy(), n_src.getKey(), n_dst.getKey());
                 if(w > max_w){
                     max_w = w;
                     n_src.setWeight(w);

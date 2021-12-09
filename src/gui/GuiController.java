@@ -5,8 +5,6 @@ import api.*;
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
@@ -122,31 +120,35 @@ public class GuiController {
         menuItem = new JMenuItem("Add Node", KeyEvent.VK_T);
         menu.add(menuItem);
 
-        menuItem = new JMenuItem("Delete Node", KeyEvent.VK_T);
-        menuItem.addActionListener((event) -> this.delete_node());
-        menu.add(menuItem);
-        menu.addSeparator();
-
         menuItem = new JMenuItem("Add Edge", KeyEvent.VK_T);
-        menu.add(menuItem);
-
-        menuItem = new JMenuItem("Delete Edge", KeyEvent.VK_T);
-        menu.add(menuItem);
-
-        menuItem = new JMenuItem("Change Edge Wight", KeyEvent.VK_T);
         menu.add(menuItem);
 
         menuBar.add(menu);
 
+        menu.addSeparator();
+        cbMenuItem = new JCheckBoxMenuItem("Enable Drag Nodes");
+        cbMenuItem.addActionListener((e) -> toggle_enable_drag());
+        cbMenuItem.setSelected(true);
+        cbMenuItem.setMnemonic(KeyEvent.VK_H);
+        menu.add(cbMenuItem);
+
+        cbMenuItem = new JCheckBoxMenuItem("Show Edges Weight");
+        cbMenuItem.addActionListener((e) -> toggle_show_edge_weight());
+        cbMenuItem.setSelected(true);
+        cbMenuItem.setMnemonic(KeyEvent.VK_H);
+        menu.add(cbMenuItem);
+
 
         menu = new JMenu("Algorithms");
         menuItem = new JMenuItem("Is Connected", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> algo_is_connected());
         menu.add(menuItem);
 
         menuItem = new JMenuItem("Shorted Path", KeyEvent.VK_T);
         menu.add(menuItem);
 
         menuItem = new JMenuItem("Center", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> algo_center());
         menu.add(menuItem);
 
         menuItem = new JMenuItem("TSP", KeyEvent.VK_T);
@@ -154,8 +156,53 @@ public class GuiController {
 
         menuBar.add(menu);
 
+
+        menu = new JMenu("Help");
+        menuItem = new JMenuItem("Help", KeyEvent.VK_T);
+        menu.add(menuItem);
+
+        menu.addSeparator();
+
+        menuItem = new JMenuItem("About", KeyEvent.VK_T);
+        menu.add(menuItem);
+
+        menuBar.add(menu);
+
         frame.setJMenuBar(menuBar);
     }
+
+    private void toggle_enable_drag(){
+        g_draw.set_drag_nodes(!g_draw.is_enabled_drag_nodes());
+    }
+
+    private void toggle_show_edge_weight(){
+        g_draw.set_show_edges_weight(!g_draw.is_show_edges_weight());
+        g_draw.set_update();
+        g_draw.repaint();
+    }
+
+    private void algo_is_connected(){
+        boolean i_c = this.algo.isConnected();
+        String msg = "The Graph is ";
+        if(!i_c) msg += "not ";
+        JOptionPane.showMessageDialog(this.frame, msg+"connected",
+                "Algorithm: Is Connected", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void algo_center(){
+        NodeData n_c = this.algo.center();
+        if(n_c == null){
+            JOptionPane.showMessageDialog(this.frame, "The graph is not connected",
+                    "Algorithm: Center", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        String msg = "The Center Node is "+ n_c.getKey();
+
+        JOptionPane.showMessageDialog(this.frame, msg,
+                "Algorithm: Center", JOptionPane.INFORMATION_MESSAGE);
+    }
+
 
     private void open_graph_file(){
         JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getDefaultDirectory());
@@ -217,48 +264,6 @@ public class GuiController {
             }
         }
     }
-
-    private void delete_node(){
-        NodeData n = choose_node();
-        if(n == null) return;
-        if(this.algo.getGraph().removeNode(n.getKey()) != null){
-
-        }
-        else{
-
-        }
-    }
-
-    private NodeData choose_node(){
-
-        JFrame f = new JFrame("Choose Node");
-        //set size and location of frame
-        f.setSize(300, 200);
-        f.setLocation(100, 100);
-
-        f.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-        JLabel labelM = new JLabel("Select the wanted Node");
-        labelM.setBounds(0, 0, 200, 30);
-
-//        j.
-
-        JButton b = new JButton("Select Node");
-//        b.
-
-        JLabel labelN = new JLabel("The selected node id: "+this.g_draw.getLastNodeClicked().getKey());
-        labelM.setBounds(50, 150, 200, 30);
-
-        f.add(labelM);
-        f.add(b);
-        f.add(labelN);
-
-        f.setLayout(null);
-        f.setVisible(true);
-
-        return this.g_draw.getLastNodeClicked();
-    }
-
     public static void main(String[] args){
 
         //        DirectedWeightedGraph g = new BaseDirectedWeightedGraph();

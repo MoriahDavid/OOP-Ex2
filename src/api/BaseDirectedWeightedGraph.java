@@ -34,8 +34,10 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
             EdgeData e = it_e.next();
             this.connect(e.getSrc(), e.getDest(), e.getWeight());
             EdgeData e_new = this.getEdge(e.getSrc(), e.getDest());
-            e_new.setInfo("" + e.getInfo());
-            e_new.setTag(e.getTag());
+            if(e_new != null) {
+                e_new.setInfo("" + e.getInfo());
+                e_new.setTag(e.getTag());
+            }
         }
     }
 
@@ -89,6 +91,13 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
     public void addNode(NodeData n) {
         // TODO: validate the inputs
         this.nodes.put(n.getKey(), n);
+
+        HashMap<Integer, EdgeData> src_e = new HashMap<Integer, EdgeData>();
+        this.edges_src.put(n.getKey(), src_e); // Create new HashMap for this src node.
+
+        HashMap<Integer, EdgeData> dest_e = new HashMap<Integer, EdgeData>();
+        this.edges_dest.put(n.getKey(), dest_e); // Create new HashMap for this dest node.
+
         this.mc_counter++;
     }
 
@@ -108,15 +117,7 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
         }
 
         HashMap<Integer, EdgeData> src_e = this.edges_src.getOrDefault(src, null);
-        if (src_e == null) {
-            src_e = new HashMap<Integer, EdgeData>();
-            this.edges_src.put(src, src_e); // Create new HashMap for this src node.
-        }
         HashMap<Integer, EdgeData> dest_e = this.edges_dest.getOrDefault(dest, null);
-        if (dest_e == null) {
-            dest_e = new HashMap<Integer, EdgeData>();
-            this.edges_dest.put(dest, dest_e); // Create new HashMap for this dest node.
-        }
 
         EdgeData e = new BaseEdgeData(w, this.getNode(src), this.getNode(dest));
         src_e.put(dest, e);

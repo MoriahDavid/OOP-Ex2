@@ -76,19 +76,22 @@ public class EdgeShape extends BaseShape {
         AffineTransform affineTransform = new AffineTransform();
 
         int y_pos = -15;
-        if(angle > 2){
+        int x_pos = (len/2)-(txt_len/2);
+
+        if(Math.abs(angle) > 2){
             affineTransform.rotate(Math.toRadians(180), 0, 0);
             y_pos = -25;
+            x_pos = x_pos + 40;
         }
         Font rotatedFont = font.deriveFont(affineTransform);
         g.setFont(rotatedFont);
 
         g.setColor(this.textColor);
-        g.drawString(this.text, len/2-txt_len/2, y_pos);
+        g.drawString(this.text, x_pos, y_pos);
     }
 
     public boolean contains(int x, int y) {
-        if (1==1 || shape == null || !shape.getBounds().equals(getBounds())) {
+        if (shape == null || !shape.getBounds().equals(getBounds())) {
             Rectangle2D rect = new Rectangle2D.Double( 0, -20, len, 20 );
 
             AffineTransform at = AffineTransform.getTranslateInstance(0,0);

@@ -6,7 +6,6 @@ import api.GeoLocation;
 import javax.swing.*;
 import java.awt.*;
 
-
 public abstract class BaseShape extends JButton {
 
     public static Color DEFAULT_COLOR_FILL = Color.WHITE;
@@ -19,14 +18,11 @@ public abstract class BaseShape extends JButton {
     protected Color strokeColor = BaseShape.DEFAULT_COLOR_STROKE;
     protected Color textColor = BaseShape.DEFAULT_COLOR_TEXT;
 
-    Shape shape;
+    protected Shape shape;
     protected int strokeWidth = 1;
 
     public BaseShape(String label){
         super(label);
-        Dimension size = getPreferredSize();
-//        size.width = size.height = Math.max(size.width, size.height);
-//        setPreferredSize(size);
         setContentAreaFilled(false);
     }
 
@@ -43,7 +39,6 @@ public abstract class BaseShape extends JButton {
     protected void paintShape(Graphics g){}
 
     protected void paintBorder(Graphics g){
-//        super.paintBorder(g); // TODO: delete
         Graphics2D g2d = (Graphics2D) g;
         g2d.setStroke(new BasicStroke(this.strokeWidth));
 
