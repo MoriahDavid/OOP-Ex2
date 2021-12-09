@@ -20,7 +20,7 @@ public class BaseGeoLocation implements api.GeoLocation {
 
     public BaseGeoLocation(String s){
         String[] v = s.split(",");
-        // TODO: check validatn
+        if (v.length != 3) throw new NumberFormatException();
         this._x = Double.parseDouble(v[0]);
         this._y = Double.parseDouble(v[1]);
         this._z = Double.parseDouble(v[2]);
