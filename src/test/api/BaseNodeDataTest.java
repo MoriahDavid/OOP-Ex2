@@ -46,17 +46,25 @@ class BaseNodeDataTest {
 
     @Test
     void getInfo() {
+        assertEquals("Bla", n1.getInfo());
     }
 
     @Test
     void setInfo() {
+        BaseNodeData n2 = new BaseNodeData(10, 5, "Bla", 0.555, new BaseGeoLocation(1,2,0));
+        n2.setInfo("BlaBla");
+        assertEquals("BlaBla", n2.getInfo());
     }
 
     @Test
     void getTag() {
+        assertEquals(1, n1.getTag());
     }
 
     @Test
     void setTag() {
+        BaseNodeData n2 = new BaseNodeData(10, 5, "Bla", 0.555, new BaseGeoLocation(1,2,0));
+        n2.setTag(0);
+        assertEquals(0, n2.getTag());
     }
 }
