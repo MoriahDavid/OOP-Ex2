@@ -290,6 +290,17 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
 
         return path_nodes;
     }
+    public double pathWeight(List<NodeData> l){
+        double total_w=0;
+        for(int i=0; i<l.size()-1;i++){
+            EdgeData e = this.getGraph().getEdge(l.get(i).getKey(), l.get(i+1).getKey());
+            if(e==null){
+                e = this.getGraph().getEdge(l.get(i+1).getKey(), l.get(i).getKey());
+            }
+            total_w += e.getWeight();
+        }
+        return total_w;
+    }
 
     private NodeData getRandomNode(List<NodeData> ln){
         if(ln.size() == 0){
@@ -385,9 +396,11 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         BaseDirectedWeightedGraphAlgo a = new BaseDirectedWeightedGraphAlgo();
 
         a.load("data\\G2.json");
-//        System.out.println(a.shortestPath(0,4));
-//        System.out.println(a.center().getKey());
+
+        System.out.println(a.shortestPath(0,4));
+        System.out.println(a.center().getKey());
         System.out.println(a.isConnected());
+
         List<NodeData> l = new ArrayList<>();
         Iterator<NodeData> it = a.getGraph().nodeIter();
         while (it.hasNext()){
@@ -401,17 +414,6 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         }
         System.out.println();
 
-        double total_w=0;
-        for(int i=0; i<r.size()-1;i++){
-            EdgeData e = a.getGraph().getEdge(r.get(i).getKey(), r.get(i+1).getKey());
-            if(e==null){
-                System.out.println("There is no edge "+r.get(i).getKey() + " -> " + r.get(i+1).getKey());
-            }
-            else{
-                total_w += e.getWeight();
-            }
-        }
-        System.out.println("Total w: "+total_w);
-
+        System.out.println("Total w: "+a.pathWeight(r));
     }
 }
