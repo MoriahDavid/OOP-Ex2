@@ -8,10 +8,10 @@ import java.awt.*;
 
 public abstract class BaseShape extends JButton {
 
-    public static Color DEFAULT_COLOR_FILL = Color.WHITE;
-    public static Color DEFAULT_COLOR_FILL_CLICKED = Color.lightGray;
+    public static Color DEFAULT_COLOR_FILL = new Color(0xDC5387);
+    public static Color DEFAULT_COLOR_FILL_CLICKED = new Color(0xF5F5F5);
     public static Color DEFAULT_COLOR_STROKE = Color.BLACK;
-    public static Color DEFAULT_COLOR_TEXT = Color.BLUE;
+    public static Color DEFAULT_COLOR_TEXT = new Color(0x2D334B);
 
     protected Color fillColor = BaseShape.DEFAULT_COLOR_FILL;
     protected Color clickedFillColor = BaseShape.DEFAULT_COLOR_FILL_CLICKED;

@@ -35,6 +35,7 @@ public class EdgeShape extends BaseShape {
         this.end = end;
 
         this.edge = edge;
+        this.clickedFillColor = new Color(0x918C94);
     }
 
     public EdgeData get_edge(){
