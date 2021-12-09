@@ -2,6 +2,7 @@ package api;
 
 import com.google.gson.*;
 
+import java.io.FileOutputStream;
 import java.util.Random;
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -334,6 +335,46 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public boolean save(String file) {
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        JsonObject jsonGraph = new JsonObject();
+
+        JsonArray jsonNodes = new JsonArray();
+        Iterator<NodeData> it_n = this.graph.nodeIter();
+        while(it_n.hasNext()){
+            NodeData n = it_n.next();
+            JsonObject j_n = new JsonObject();
+            j_n.addProperty("id", n.getKey());
+            GeoLocation g = n.getLocation();
+            j_n.addProperty("pos", ""+g.x()+","+g.y()+","+g.z());
+            jsonNodes.add(j_n);
+        }
+        jsonGraph.add("Nodes", jsonNodes);
+
+        JsonArray jsonEdges = new JsonArray();
+        Iterator<EdgeData> it_e = this.graph.edgeIter();
+        while(it_e.hasNext()){
+            EdgeData e = it_e.next();
+            JsonObject j_e = new JsonObject();
+            j_e.addProperty("src", e.getSrc());
+            j_e.addProperty("dest", e.getDest());
+            j_e.addProperty("w", e.getWeight());
+            jsonEdges.add(j_e);
+        }
+        jsonGraph.add("Edges", jsonEdges);
+
+        String customJSON = gson.toJson(jsonGraph);
+
+        try {
+            FileOutputStream outputStream = new FileOutputStream(file);
+            byte[] strToBytes = customJSON.getBytes();
+            outputStream.write(strToBytes);
+            outputStream.close();
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         return false;
     }
 
