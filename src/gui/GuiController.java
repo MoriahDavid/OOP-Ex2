@@ -273,7 +273,7 @@ public class GuiController {
         //        g.connect(2, key1, 30);
 
         BaseDirectedWeightedGraphAlgo a = new BaseDirectedWeightedGraphAlgo();
-        a.load("data\\G2.json");
+        a.load("data\\G1.json");
 
         GuiController g = new GuiController(a);
         g.show();

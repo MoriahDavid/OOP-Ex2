@@ -53,27 +53,21 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     public boolean isConnected() {
 
         BaseDirectedWeightedGraph g = this.copy();
-        this.reset_nodes(g);
 
         Iterator<NodeData> it = g.nodeIter();
         NodeData start_node = it.next();
-        start_node.setTag(1);
 
         while (it.hasNext()) {
             NodeData node = it.next();
-            // check have route from start_node to node
-            if(node.getTag() == 1)
+            // check if already found route from start_node to this node.
+            if(node.getWeight() > Double.MAX_VALUE)
                 continue;
 
-            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1){
+            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1)
                 return false;
-            }
-//            if (!exist_path(g, start_node, node))
-//                return false;
         }
-        System.out.println("Done one side");
 
-        g.transpose();
+        g.transpose(); // Transpose the graph and check choose node and check again.
 
         this.reset_nodes(g);
 
@@ -83,43 +77,32 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         while (it.hasNext()) {
             NodeData node = it.next();
             // check have route from start_node to node
-            if(node.getTag() == 1)
+            if(node.getWeight() > Double.MAX_VALUE)
                 continue;
 
-            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1){
+            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1)
                 return false;
-            }
-
-
-//            if (!exist_path(g, start_node, node))
-//                return false;
         }
 
         return true;
     }
 
-    private void reset_nodes(DirectedWeightedGraph g){
+    private void reset_nodes(DirectedWeightedGraph g, int tag, double weight){
         Iterator<NodeData> it = g.nodeIter();
         while (it.hasNext()) {
             NodeData node = it.next();
-            node.setTag(0);
-            node.setWeight(0);
+            node.setTag(tag);
+            node.setWeight(weight);
         }
     }
-
-    private boolean exist_path(DirectedWeightedGraph g, NodeData src, NodeData dst){
-        if(g.getEdge(src.getKey(), dst.getKey()) != null){
-            dst.setTag(1);
-            return true;
+    private void reset_nodes(DirectedWeightedGraph g){
+        this.reset_nodes(g,0,0);
+    }
+    private void reset_nodes(List<NodeData> nodes, int tag, double weight){
+        for(int i = 0; i < nodes.size(); i++){ //Set 0 in the node tag.
+            nodes.get(i).setTag(tag);
+            nodes.get(i).setWeight(weight);
         }
-        Iterator<EdgeData> it = g.edgeIter(src.getKey());
-        while(it.hasNext()){
-            EdgeData e = it.next();
-            if(exist_path(g, g.getNode(e.getDest()), dst)){
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -142,12 +125,9 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         Dijkstra(g, src);
         NodeData d = g.getNode(dest);
 
-        if(d.getTag() == Integer.MIN_VALUE) return -1;
+        if(d.getWeight() == Double.MAX_VALUE) return -1;
 
-        double r = d.getWeight();
-        this.reset_nodes(g);
-
-        return r;
+        return d.getWeight();
     }
 
     /**
@@ -164,7 +144,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     public List<NodeData> shortestPath(int src, int dest) {
         // TODO: validate the inputs
 
-        DirectedWeightedGraph g = this.graph;
+        DirectedWeightedGraph g = this.copy();
 
         this.Dijkstra(g, src);
 
@@ -181,10 +161,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             if(n == null)
                 throw new RuntimeException(); // TODO: Change to more indicative exception.
 
-            l.add(0, n);
+            l.add(0, this.graph.getNode(n.getKey()));
         }
-
-        this.reset_nodes(g);
 
         return l;
     }
@@ -236,12 +214,11 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public NodeData center() {
-        if(!isConnected()){ // TODO: maybe can fix the algo that include this check instead of running it twice;
+        if(!isConnected()){ // if the graph is not connected we can't calculate the center
             return null;
         }
         DirectedWeightedGraph g = this.copy();
         Iterator<NodeData> i = g.nodeIter();
-
 
         while(i.hasNext()){
             NodeData n_src = i.next();
@@ -266,8 +243,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
                 min_node = n;
             }
         }
-        return min_node;
 
+        return this.graph.getNode(min_node.getKey());
     }
 
     /**
@@ -280,17 +257,14 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        int j = 0;
         List<NodeData> path_nodes = new ArrayList<>();
         if(cities.size() == 0){
             return null;
         }
-        for(int i = 0; i < cities.size(); i++){ //Set 0 in the node tag.
-            cities.get(i).setTag(0);
-            cities.get(i).setWeight(-1);
-        }
+
+        this.reset_nodes(cities, 0, -1); //Set 0 in the node tag and -1 for weight.
         NodeData rand_n = getRandomNode(cities); //Choose node in random.
-//        NodeData rand_n = this.graph.getNode(20);
+
         rand_n.setTag(1);
         path_nodes.add(rand_n); //Add to the final list.
 
@@ -312,6 +286,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             }
             path_nodes.add(n);
         }
+        this.reset_nodes(cities, 0, 0); // Set 0 in the node tag and 0 for weight.
+
         return path_nodes;
     }
 
@@ -327,9 +303,10 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         double c = Integer.MAX_VALUE;
         NodeData closestNode = null; // The closest node to n1.
         for(int i = 0; i < ln.size(); i++){
-            if(this.graph.getEdge(n1.getKey(), ln.get(i).getKey()) != null && ln.get(i).getTag()==0) { // If this edge exist and if we visit this node before.
-                if (this.graph.getEdge(n1.getKey(), ln.get(i).getKey()).getWeight() < c) { // If the weight (dist) is smaller.
-                    c = this.graph.getEdge(n1.getKey(), ln.get(i).getKey()).getWeight();
+            EdgeData e = this.graph.getEdge(n1.getKey(), ln.get(i).getKey());
+            if(e != null && ln.get(i).getTag()==0) { // If this edge exist and if we visit this node before.
+                if (e.getWeight() < c) { // If the weight (dist) is smaller.
+                    c = e.getWeight();
                     closestNode = ln.get(i);
                 }
             }
@@ -363,7 +340,6 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         try {
             FileReader fr = new FileReader(file);
             BufferedReader br = new BufferedReader(fr);
-            Gson gson = new Gson();
 
             GsonBuilder gsonBuilder = new GsonBuilder();
 
@@ -390,9 +366,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
 
             JsonArray j_n = jsonObject.getAsJsonArray("Nodes");
             for (JsonElement n: j_n) {
-                graph.addNode(new BaseNodeData(n.getAsJsonObject().get("id").getAsInt(),
-                        0,"",0,
-                        new BaseGeoLocation(n.getAsJsonObject().get("pos").getAsString())));
+                graph.addNode(new BaseNodeData(n.getAsJsonObject().get("id").getAsInt(), 0,"",0,
+                              new BaseGeoLocation(n.getAsJsonObject().get("pos").getAsString())));
             }
 
             JsonArray j_e = jsonObject.getAsJsonArray("Edges");
