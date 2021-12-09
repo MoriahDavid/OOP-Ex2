@@ -32,8 +32,27 @@ The first one is -nodes- represens our nodes on the graph.
 In this class we implements these methods: transpose, getNode, getEdge, addNode, connect, nodeIter, edgeIter, removeNode, removeEdgesForNode, rempveEdge, nodeSize, edgeSize, getMC.
 We also made three classes for Iterator: nodeIterator, edgeIterator- for specific node and AllEdgesIterator- for all the nodes on the graph.
 
-
 #### BaseDirectedWeightedGraphAlgo
+In this class we have the main algorithms for graph.
+the methods:
+
+init- Initializes a new graph.
+getGraph- Return the graph.
+copy- Make a deep copy for a graph.
+Dijkstra- Dijkstra's algorithm found the shortest path between two given nodes. Dijkstra algorithms- https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+shortestPath- /
+shortestPathDist- Return the dist (weight) of the shortest path between two nodes by using Dijkstra method.
+isConnected- We check for every node in the graph, if there is a path between it and rest of the vertices by using the method shortestPathDist. Then, we do transpose to the graph and check again.
+reset_nodes- Inserts values (tag and weight) to the nodes.
+center-/
+tsp- /
+pathWeight- Return the total weight of a path (represent with list). 
+getRandomNode- Return node in random.
+closestNode- Return the closest node to some node by passing all the nodes in the list and calculate the total weight.
+
+save-
+load- 
+graphDeserializer- 
 
 ### Algorithms Results
 Graph with 1000 nodes:
