@@ -7,6 +7,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class GuiController {
 
@@ -78,7 +80,12 @@ public class GuiController {
         menuItem = new JMenuItem("Add Edge", KeyEvent.VK_T); // TODO: AddEdge
         menu.add(menuItem);
 
-        menuBar.add(menu);
+
+        menu.addSeparator();
+
+        menuItem = new JMenuItem("Clear Marked Edges", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> clear_edges_marks());
+        menu.add(menuItem);
 
         menu.addSeparator();
         cbMenuItem = new JCheckBoxMenuItem("Enable Drag Nodes");
@@ -93,20 +100,23 @@ public class GuiController {
         cbMenuItem.setMnemonic(KeyEvent.VK_H);
         menu.add(cbMenuItem);
 
+        menuBar.add(menu);
 
         menu = new JMenu("Algorithms");
         menuItem = new JMenuItem("Is Connected", KeyEvent.VK_T);
         menuItem.addActionListener((e) -> algo_is_connected());
         menu.add(menuItem);
 
-        menuItem = new JMenuItem("Shorted Path", KeyEvent.VK_T); // TODO: add option
+        menuItem = new JMenuItem("Shorted Path", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> algo_shorted_path());
         menu.add(menuItem);
 
         menuItem = new JMenuItem("Center", KeyEvent.VK_T);
         menuItem.addActionListener((e) -> algo_center());
         menu.add(menuItem);
 
-        menuItem = new JMenuItem("TSP", KeyEvent.VK_T); // TODO: add option
+        menuItem = new JMenuItem("TSP", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> algo_tsp());
         menu.add(menuItem);
 
         menuBar.add(menu);
@@ -147,17 +157,62 @@ public class GuiController {
     private void algo_center(){
         NodeData n_c = this.algo.center();
         if(n_c == null){
-            JOptionPane.showMessageDialog(this.frame, "The graph is not connected",
-                    "Algorithm: Center", JOptionPane.ERROR_MESSAGE);
+            String m = "The graph is not connected";
+            JOptionPane.showMessageDialog(this.frame, m,"Algorithm: Center", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        String msg = "The Center Node is "+ n_c.getKey();
+
+        JOptionPane.showMessageDialog(this.frame, msg, "Algorithm: Center", JOptionPane.INFORMATION_MESSAGE);
+    }
+    private void algo_tsp(){
+        List<NodeData> all_e = new ArrayList<>();
+        this.algo.getGraph().nodeIter().forEachRemaining((n) -> all_e.add(n));
+        List<NodeData> l = this.algo.tsp(all_e);
+
+        List<EdgeData> edges = new ArrayList<>();
+        double w = 0;
+        for(int i=0; i<l.size()-1;i++){
+            EdgeData e = this.algo.getGraph().getEdge(l.get(i).getKey(), l.get(i+1).getKey());
+            if(e!=null){
+                edges.add(e);
+                w+=e.getWeight();
+            }
+        }
+        g_draw.set_marked_edges(edges);
+
+        String m = "Start from: " + l.get(0).getKey() + "\n Path len: ";
+        JOptionPane.showMessageDialog(this.frame, m+w,"Algorithm: TSP", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void algo_shorted_path(){
+        NodeData src=g_draw.get_selected_src(), dest=g_draw.get_selected_dest();
+        if(src == null || dest == null){
+            String m = "Need to choose src and dest nodes.\nRight click on node and select.";
+            JOptionPane.showMessageDialog(this.frame, m,"Algorithm: Shortest Path", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        String msg = "The Center Node is "+ n_c.getKey();
+        List<NodeData> l = this.algo.shortestPath(src.getKey(), dest.getKey());
 
-        JOptionPane.showMessageDialog(this.frame, msg,
-                "Algorithm: Center", JOptionPane.INFORMATION_MESSAGE);
+        List<EdgeData> edges = new ArrayList<>();
+        double w = 0;
+        for(int i=0; i<l.size()-1;i++){
+            EdgeData e = this.algo.getGraph().getEdge(l.get(i).getKey(), l.get(i+1).getKey());
+            if(e!=null){
+                edges.add(e);
+                w+=e.getWeight();
+            }
+        }
+        g_draw.set_marked_edges(edges);
+
+        String m = "Path len: "+w;
+        JOptionPane.showMessageDialog(this.frame, m,"Algorithm: Shortest Path", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private void clear_edges_marks(){
+        this.g_draw.clear_marked_edges();
+    }
 
     private void open_graph_file(){
         JFileChooser j = new JFileChooser(FileSystemView.getFileSystemView().getDefaultDirectory());

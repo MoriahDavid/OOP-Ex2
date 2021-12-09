@@ -13,6 +13,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 
 
 public class GraphDraw extends JPanel {
@@ -20,6 +22,9 @@ public class GraphDraw extends JPanel {
     private static final int MINIMUM_NODE_SIZE = 32;
     private static final int NODE_PADDING = 8;
 
+    private Color nodeColorSrc = new Color(0xA03BE8);
+    private Color nodeColorDest = new Color(0xFF0080);
+    private Color edgeColorMarked = Color.CYAN;
     private Color backGroundColor = new Color(0xFAFAFA);
     private Color nodeColor = new Color(0x9B4565);
     private Color edgeColor = new Color(0x44A98E);
@@ -34,12 +39,15 @@ public class GraphDraw extends JPanel {
     private int width, height;
     private boolean should_update = true;
 
-    private NodeData lastClickedNode;
-    private EdgeData lastClickedEdge;
+    private NodeData srcSelectedNode;
+    private NodeData destSelectedNode;
+
     private int last_mc;
 
     private boolean enable_drag_nodes = true;
     private boolean show_edges_weight = true;
+
+    private java.util.List<EdgeData> marked_edges;
 
     public void set_drag_nodes(boolean f){
         this.enable_drag_nodes = f;
@@ -51,11 +59,21 @@ public class GraphDraw extends JPanel {
     public void set_show_edges_weight(boolean f){this.show_edges_weight = f;}
     public boolean is_show_edges_weight(){return this.show_edges_weight;}
 
-    public NodeData getLastNodeClicked(){
-        return this.lastClickedNode;
+    public NodeData get_selected_src(){
+        return this.srcSelectedNode;
     }
-    public EdgeData getLastEdgeClicked(){
-        return this.lastClickedEdge;
+    public NodeData get_selected_dest(){
+        return this.destSelectedNode;
+    }
+    public void set_selected_src(NodeData n){
+        this.srcSelectedNode = n;
+        set_update();
+        repaint();
+    }
+    public void set_selected_dest(NodeData n){
+        this.destSelectedNode=n;
+        set_update();
+        repaint();
     }
 
     public GraphDraw(DirectedWeightedGraph graph){
@@ -69,10 +87,18 @@ public class GraphDraw extends JPanel {
         this.setLayout(null);
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         this.set_scale();
+        this.marked_edges = new LinkedList<>();
     }
 
-    public void update(){
-        this.should_update = true;
+    public void set_marked_edges(List<EdgeData> e){
+        this.marked_edges = e;
+        this.set_update();
+        this.repaint();
+    }
+    public void clear_marked_edges(){
+        this.marked_edges.clear();
+        this.set_update();
+        this.repaint();
     }
 
     public void update(DirectedWeightedGraph g){
@@ -167,8 +193,15 @@ public class GraphDraw extends JPanel {
         n.addMouseListener(new PopClickListener());
         n.addMouseMotionListener(new PopClickListener());
         n.setMargin(new Insets(0,0,0,0));
-        n.SetColorStroke(this.nodeColor);
-
+        if(node == this.srcSelectedNode){
+            n.SetColorStroke(this.nodeColorSrc);
+        }
+        else if(node == this.destSelectedNode){
+            n.SetColorStroke(this.nodeColorDest);
+        }
+        else {
+            n.SetColorStroke(this.nodeColor);
+        }
         this.m.put(node, n);
         this.add(n);
     }
@@ -191,8 +224,11 @@ public class GraphDraw extends JPanel {
 
         e.addMouseListener(new PopClickListener());
         e.setMargin(new Insets(0,0,0,0));
-        e.SetColorFill(this.edgeColor);
-
+        if(this.marked_edges.contains(edge)){
+            e.SetColorFill(this.edgeColorMarked);
+        }else {
+            e.SetColorFill(this.edgeColor);
+        }
         this.add(e);
     }
     public void set_update(){
@@ -278,6 +314,13 @@ public class GraphDraw extends JPanel {
         public PopUpNode(DirectedWeightedGraph g, NodeData n, MouseEvent e) {
             anItem = new JMenuItem("Delete Node");
             anItem.addActionListener((event) -> delete_node(n));
+            add(anItem);
+            addSeparator();
+            anItem = new JMenuItem("Select as Src");
+            anItem.addActionListener((event) -> set_selected_src(n));
+            add(anItem);
+            anItem = new JMenuItem("Select as Dest");
+            anItem.addActionListener((event) -> set_selected_dest(n));
             add(anItem);
         }
     }
