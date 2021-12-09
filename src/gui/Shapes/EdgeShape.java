@@ -1,5 +1,6 @@
 package gui.Shapes;
 
+import api.EdgeData;
 import api.GeoLocation;
 
 import java.awt.*;
@@ -17,10 +18,12 @@ public class EdgeShape extends BaseShape {
     String text;
     GeoLocation start, end;
 
-    public EdgeShape(String label, GeoLocation start, GeoLocation end, int arrowDist) {
+    private EdgeData edge;
+
+    public EdgeShape(String label, GeoLocation start, GeoLocation end, int arrowDist, EdgeData edge) {
         super("");
         this.text = label;
-        this.strokeWidth = 3;
+        this.strokeWidth = 2;
 
         this.dx = end.x() - start.x();
         this.dy = end.y() - start.y();
@@ -30,6 +33,12 @@ public class EdgeShape extends BaseShape {
 
         this.start = start;
         this.end = end;
+
+        this.edge = edge;
+    }
+
+    public EdgeData get_edge(){
+        return this.edge;
     }
 
     @Override
@@ -79,7 +88,7 @@ public class EdgeShape extends BaseShape {
     }
 
     public boolean contains(int x, int y) {
-        if (shape == null || !shape.getBounds().equals(getBounds())) {
+        if (1==1 || shape == null || !shape.getBounds().equals(getBounds())) {
             Rectangle2D rect = new Rectangle2D.Double( 0, -20, len, 20 );
 
             AffineTransform at = AffineTransform.getTranslateInstance(0,0);

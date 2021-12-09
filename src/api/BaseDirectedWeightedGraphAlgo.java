@@ -57,6 +57,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
 
         Iterator<NodeData> it = g.nodeIter();
         NodeData start_node = it.next();
+        start_node.setTag(1);
 
         while (it.hasNext()) {
             NodeData node = it.next();
@@ -64,9 +65,13 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             if(node.getTag() == 1)
                 continue;
 
-            if (!exist_path(g, start_node, node))
+            if(this.shortestPathDist(start_node.getKey(), node.getKey()) == -1){
                 return false;
+            }
+//            if (!exist_path(g, start_node, node))
+//                return false;
         }
+        System.out.println("Done one side");
 
         g.transpose();
 
@@ -81,8 +86,13 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             if(node.getTag() == 1)
                 continue;
 
-            if (!exist_path(g, start_node, node))
+            if(this.shortestPathDist(start_node.getKey(), node.getKey()) == -1){
                 return false;
+            }
+
+
+//            if (!exist_path(g, start_node, node))
+//                return false;
         }
 
         return true;
@@ -268,20 +278,30 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         }
         for(int i = 0; i < cities.size(); i++){ //Set 0 in the node tag.
             cities.get(i).setTag(0);
+            cities.get(i).setWeight(-1);
         }
         NodeData rand_n = getRandomNode(cities); //Choose node in random.
+//        NodeData rand_n = this.graph.getNode(20);
         rand_n.setTag(1);
-        NodeData n = closestNode(rand_n, cities); //Find the closest node from rand node.
-        n.setTag(1); //Change the tag of the node that we checked its closest node.
-        path_nodes.add(j, rand_n); //Add to the final list.
-        j++;
-        path_nodes.add(j, n);
-        j++;
-        for(int i = j; i < cities.size(); i++){
-            n = closestNode(n, cities);
-            n.setTag(1);
-            path_nodes.add(j, n);
-            j++;
+        path_nodes.add(rand_n); //Add to the final list.
+
+        int visited_nodes = 1;
+
+        NodeData n = rand_n;
+        while(visited_nodes < cities.size()){
+            NodeData next = closestNode(n, cities);
+            if (next == null){
+                next = this.graph.getNode((int)n.getWeight());
+            }
+            else{
+                next.setWeight(n.getKey());
+            }
+            n = next;
+            if(n.getTag()!=1){
+                n.setTag(1);
+                visited_nodes++;
+            }
+            path_nodes.add(n);
         }
         return path_nodes;
     }
@@ -344,7 +364,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             this.graph = customGson.fromJson(br, BaseDirectedWeightedGraph.class);
             return true;
 
-        } catch (IOException e) {
+        } catch (IOException | JsonSyntaxException | JsonIOException e) {
             e.printStackTrace();
             return false;
         }
@@ -380,8 +400,34 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     public static void main(String[] args){
         BaseDirectedWeightedGraphAlgo a = new BaseDirectedWeightedGraphAlgo();
 
-        a.load("data\\G1.json");
-        System.out.println(a.shortestPath(0,4));
-        System.out.println(a.center().getKey());
+        a.load("data\\G2.json");
+//        System.out.println(a.shortestPath(0,4));
+//        System.out.println(a.center().getKey());
+        System.out.println(a.isConnected());
+        List<NodeData> l = new ArrayList<>();
+        Iterator<NodeData> it = a.getGraph().nodeIter();
+        while (it.hasNext()){
+            l.add(it.next());
+        }
+        System.out.println("Total Nodes in graph: " + l.size());
+        List<NodeData> r = a.tsp(l);
+        System.out.println("Total Nodes in tsp: " + r.size());
+        for (NodeData n: r){
+            System.out.print(n.getKey() + " -> ");
+        }
+        System.out.println();
+
+        double total_w=0;
+        for(int i=0; i<r.size()-1;i++){
+            EdgeData e = a.getGraph().getEdge(r.get(i).getKey(), r.get(i+1).getKey());
+            if(e==null){
+                System.out.println("There is no edge "+r.get(i).getKey() + " -> " + r.get(i+1).getKey());
+            }
+            else{
+                total_w += e.getWeight();
+            }
+        }
+        System.out.println("Total w: "+total_w);
+
     }
 }

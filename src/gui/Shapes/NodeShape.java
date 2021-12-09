@@ -1,13 +1,22 @@
 package gui.Shapes;
 
+import api.NodeData;
+
 import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 public class NodeShape extends BaseShape {
 
-    public NodeShape(String text){
+    private NodeData node;
+
+    public NodeShape(String text, NodeData node){
         super(text);
         this.strokeWidth = 3;
+        this.node = node;
+    }
+
+    public NodeData get_node(){
+        return this.node;
     }
 
     @Override
@@ -25,7 +34,7 @@ public class NodeShape extends BaseShape {
     }
 
     public boolean contains(int x, int y) {
-        if (shape == null || !shape.getBounds().equals(getBounds())) {
+        if (1==1 || shape == null || !shape.getBounds().equals(getBounds())) {
             shape = new Ellipse2D.Float(0, 0, getWidth(), getHeight());
         }
         return shape.contains(x, y);

@@ -305,9 +305,8 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
             this.check_mc();
             it.remove(); // Delete the edge with the HashMap iterator from the edges_src.
             this.mc++; // Increase the iterator changes counter.
-            edges_dest.get(this.curr.getDest()).remove(this.curr.getSrc());
-
             mc_counter++; // Increase the graph changes counter.
+            edges_dest.get(this.curr.getDest()).remove(this.curr.getSrc());
         }
 
         private void check_mc() {
@@ -320,46 +319,50 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
     private class AllEdgesIterator implements Iterator<EdgeData> {
         int mc;
         int curr_it;
-        Iterator<EdgeData> it[];
+        Iterator<EdgeData> it;
         EdgeData curr_edge;
+        ArrayList<Integer> nodes;
 
         public AllEdgesIterator() {
             this.mc = mc_counter;
             this.curr_edge = null;
-            this.it = new EdgeIterator[edges_src.size()]; // Create list of node iterators.
-            int i = 0;
-            for (int key : edges_src.keySet()) {
-                this.it[i] = edgeIter(key);
-                i++;
-            }
+            this.nodes = new ArrayList<>(edges_src.keySet());
+
+            this.curr_it = 0;
+            this.it = edgeIter(this.nodes.remove(0));
         }
 
         @Override
         public boolean hasNext() {
-            while (curr_it < this.it.length - 1 && !it[curr_it].hasNext()) {
-                curr_it++;
+            if(it==null) return false;
+
+            while (!this.nodes.isEmpty() && !it.hasNext()) {
+                this.it = edgeIter(this.nodes.remove(0));
             }
-            return this.it[curr_it].hasNext();
+            return this.it.hasNext();
         }
 
         @Override
         public EdgeData next() {
             this.check_mc();
-            while (curr_it < this.it.length && !it[curr_it].hasNext()) {
-                curr_it++;
+            if(it==null) throw new NoSuchElementException();
+
+            while (!this.nodes.isEmpty() && !it.hasNext()) {
+                this.it = edgeIter(this.nodes.remove(0));
             }
-            this.curr_edge = this.it[curr_it].next();
+
+            this.curr_edge = this.it.next();
             return this.curr_edge;
         }
 
         @Override
         public void remove() {
             this.check_mc();
-            it[curr_it].remove(); // Delete the edge with the HashMap iterator from the edges_src.
-            this.mc++; // Increase the iterator changes counter.
+            if(this.curr_edge==null || it ==null) throw new IllegalStateException();
 
-            edges_dest.get(this.curr_edge.getDest()).remove(this.curr_edge.getSrc());
-            mc_counter++; // Increase the graph changes counter.
+            this.it.remove(); // Delete the edge with the HashMap iterator from the edges_src.
+            this.curr_edge = null;
+            this.mc++; // Increase the iterator changes counter.
         }
 
         private void check_mc() {
