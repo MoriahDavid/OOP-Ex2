@@ -22,9 +22,9 @@ public class GraphDraw extends JPanel {
     private static final int MINIMUM_NODE_SIZE = 32;
     private static final int NODE_PADDING = 8;
 
-    private Color nodeColorSrc = new Color(0xA03BE8);
-    private Color nodeColorDest = new Color(0xFF0080);
-    private Color edgeColorMarked = Color.CYAN;
+    private Color nodeColorSrc = new Color(0xEADF67);
+    private Color nodeColorDest = new Color(0x68D25A);
+    private Color edgeColorMarked = new Color(0x130ED3);
     private Color backGroundColor = new Color(0xFAFAFA);
     private Color nodeColor = new Color(0x7C3751);
     private Color edgeColor = new Color(0x44A98E);
@@ -194,14 +194,12 @@ public class GraphDraw extends JPanel {
         n.addMouseMotionListener(new PopClickListener());
         n.setMargin(new Insets(0,0,0,0));
         if(node == this.srcSelectedNode){
-            n.SetColorStroke(this.nodeColorSrc);
+            n.SetColorFill(this.nodeColorSrc);
         }
         else if(node == this.destSelectedNode){
-            n.SetColorStroke(this.nodeColorDest);
+            n.SetColorFill(this.nodeColorDest);
         }
-        else {
             n.SetColorStroke(this.nodeColor);
-        }
         this.m.put(node, n);
         this.add(n);
     }
