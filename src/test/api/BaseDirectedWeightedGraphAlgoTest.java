@@ -1,12 +1,9 @@
 package api;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -102,16 +99,23 @@ class BaseDirectedWeightedGraphAlgoTest {
     @Test
     void isConnected1000() {
         BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
-        algo.load("data\\1000Nodes.json");
+        algo.load("data/1000Nodes.json");
         assertTrue(algo.isConnected());
     }
 
-//    @Test
-//    void isConnected10000() {
-//        BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
-//        algo.load("data\\10000Nodes.json");
-//        assertTrue(algo.isConnected());
-//    }
+    @Test
+    void isConnected10000() {
+        BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
+        algo.load("data/10000Nodes.json");
+        assertTrue(algo.isConnected());
+    }
+
+    @Test
+    void isConnected100000() {
+        BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
+        algo.load("data/100000.json");
+        assertTrue(algo.isConnected());
+    }
 
     @Test
     void shortestPathDist() {
@@ -154,7 +158,10 @@ class BaseDirectedWeightedGraphAlgoTest {
     }
 
     @Test
-    void tsp() {
+    void center1000() {
+        BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
+        algo.load("data/1000Nodes.json");
+        assertNotNull(algo.center());
     }
 
     @Test

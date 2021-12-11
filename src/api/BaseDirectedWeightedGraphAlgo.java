@@ -66,7 +66,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         while (it.hasNext()) {
             NodeData node = it.next();
             // check if already found route from start_node to this node.
-            if(node.getWeight() > Double.MAX_VALUE)
+            if(node.getWeight() < Double.MAX_VALUE)
                 continue;
 
             if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1)
@@ -83,7 +83,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         while (it.hasNext()) {
             NodeData node = it.next();
             // check have route from start_node to node
-            if(node.getWeight() > Double.MAX_VALUE)
+            if(node.getWeight() < Double.MAX_VALUE)
                 continue;
 
             if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1)
@@ -179,6 +179,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
     /**
      * Running Dijkstra algorithm on the graph
      * https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm
+     * For Each node saves the min distance from src on weight value and the previous node on the path on tag value.
      * @param g
      * @param src
      */
@@ -223,34 +224,34 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public NodeData center() {
-        if(!isConnected()){ // if the graph is not connected we can't calculate the center
-            return null;
-        }
+
         DirectedWeightedGraph g = this.copy();
         Iterator<NodeData> i = g.nodeIter();
+        HashMap<NodeData, Double> nodes_max_w = new HashMap<>();
 
         while(i.hasNext()){
             NodeData n_src = i.next();
             Iterator<NodeData> j = g.nodeIter();
             double max_w = Double.MIN_VALUE;
+            Dijkstra(g, n_src.getKey());
             while (j.hasNext()){
                 NodeData n_dst = j.next();
                 if(i==j) continue;
-                double w = this.shortestPathDist(this.copy(), n_src.getKey(), n_dst.getKey());
-                if(w > max_w){
+                double w = g.getNode(n_dst.getKey()).getWeight();
+                if(w == Double.MAX_VALUE) // There is no path from src to dst -> The Graph is not connected.
+                    return null;
+
+                if(w > max_w)
                     max_w = w;
-                    n_src.setWeight(w);
-                }
             }
+            nodes_max_w.put(n_src, max_w);
         }
 
-        Iterator<NodeData> it = g.nodeIter();
-        NodeData min_node = it.next();;
-        while (it.hasNext()){
-            NodeData n = it.next();
-            if(n.getWeight() < min_node.getWeight()){
+        // Gets the node with the lowest max weight.
+        NodeData min_node = null;
+        for (NodeData n: nodes_max_w.keySet()) {
+            if(min_node == null || nodes_max_w.get(n) < nodes_max_w.get(min_node))
                 min_node = n;
-            }
         }
 
         return this.graph.getNode(min_node.getKey());
@@ -299,6 +300,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
 
         return path_nodes;
     }
+
     public double pathWeight(List<NodeData> l){
         double total_w=0;
         for(int i=0; i<l.size()-1;i++){
@@ -406,7 +408,11 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
             gsonBuilder.registerTypeAdapter(BaseDirectedWeightedGraph.class, graphDeserializer);
 
             Gson customGson = gsonBuilder.create();
-            this.graph = customGson.fromJson(br, BaseDirectedWeightedGraph.class);
+            BaseDirectedWeightedGraph graph = customGson.fromJson(br, BaseDirectedWeightedGraph.class);
+            if(graph == null) return false;
+
+            this.graph = graph;
+
             return true;
 
         } catch (IOException | JsonSyntaxException | JsonIOException e) {
