@@ -21,7 +21,7 @@ public class GraphDraw extends JPanel {
     private static final int NODE_PADDING = 8;
 
     private Color backGroundColor = new Color(0xFAFAFA);
-    private Color nodeColor = new Color(0x9B4565);
+    private Color nodeColor = new Color(0x7C3751);
     private Color edgeColor = new Color(0x44A98E);
 
     private DirectedWeightedGraph graph;
