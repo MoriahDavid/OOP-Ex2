@@ -50,11 +50,18 @@ The methods: <br />
 
  <br />
 
-### :large_blue_diamond: Algorithms Results
-Graph with 1000 nodes:
-Graph with 10,000 nodes:
-Graph with 100,000 nodes:
-Graph with 1,000,000 nodes:
+### :large_blue_diamond: Algorithms Results:
+<br />
+
+Nodes          | Shorted path | Is Connected | Center  | TSP |
+-------------- | ------------ | -------------| --------|-----|
+   G1          |              |              |         |     |
+   G2          |              |              |         |     |
+   G3          |              |              |         |     |
+   1000        |              |              |         |     |
+   10,000      |              |              |         |     |
+   100,000     |              |              |         |     |
+   1,000,000   |              |              |         |     |
 
 <br />
 
@@ -62,3 +69,7 @@ Graph with 1,000,000 nodes:
 Download-
 Run-
 Use-
+
+<br />
+
+### :large_blue_diamond: Diagram:
