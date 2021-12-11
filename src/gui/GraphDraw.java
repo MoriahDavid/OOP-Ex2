@@ -277,7 +277,6 @@ public class GraphDraw extends JPanel {
                     int new_y = s.getY()+e.getY()-s.getWidth()/2;
                     n.setLocation(new BaseGeoLocation(backConvertLocationX(new_x), backConvertLocationY(new_y)));
                     s.setLocation(new_x, new_y);
-                    repaint();
                 }
             }
         }

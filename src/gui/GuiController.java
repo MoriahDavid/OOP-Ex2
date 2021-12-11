@@ -87,6 +87,10 @@ public class GuiController {
         menuItem.addActionListener((e) -> clear_edges_marks());
         menu.add(menuItem);
 
+        menuItem = new JMenuItem("Clear Marked Nodes", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> clear_nodes_marks());
+        menu.add(menuItem);
+
         menu.addSeparator();
         cbMenuItem = new JCheckBoxMenuItem("Enable Drag Nodes");
         cbMenuItem.addActionListener((e) -> toggle_enable_drag());
@@ -207,11 +211,16 @@ public class GuiController {
         g_draw.set_marked_edges(edges);
 
         String m = "Path len: "+w;
-        JOptionPane.showMessageDialog(this.frame, m,"Algorithm: Shortest Path", JOptionPane.INFORMATION_MESSAGE);
+        String t = "Algorithm: Shortest Path ("+src.getKey()+" -> "+dest.getKey()+")";
+        JOptionPane.showMessageDialog(this.frame, m,t, JOptionPane.INFORMATION_MESSAGE);
     }
 
     private void clear_edges_marks(){
         this.g_draw.clear_marked_edges();
+    }
+    private void clear_nodes_marks(){
+        this.g_draw.set_selected_src(null);
+        this.g_draw.set_selected_dest(null);
     }
 
     private void open_graph_file(){
@@ -235,6 +244,10 @@ public class GuiController {
             String path = j.getSelectedFile().getPath();
             if(this.algo.load(path)){
                 System.out.println("Loaded Successfully :" + path);
+                if(this.algo.getGraph().nodeSize() > 100){
+                    JOptionPane.showMessageDialog(this.frame, "Graph have too many nodes.\nThe GUI may run slow.",
+                            "Warning", JOptionPane.WARNING_MESSAGE);
+                }
                 this.g_draw.update(this.algo.getGraph());
             }
             else{
