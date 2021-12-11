@@ -150,6 +150,7 @@ public class GraphDraw extends JPanel {
             set_scale();
             drawNodes(g2d);
             drawEdges(g2d);
+            addMouseListener(new PopClickListener());
         }
 
     }
@@ -199,7 +200,7 @@ public class GraphDraw extends JPanel {
         else if(node == this.destSelectedNode){
             n.SetColorFill(this.nodeColorDest);
         }
-            n.SetColorStroke(this.nodeColor);
+        n.SetColorStroke(this.nodeColor);
         this.m.put(node, n);
         this.add(n);
     }
@@ -261,6 +262,25 @@ public class GraphDraw extends JPanel {
         this.graph.removeNode(n.getKey());
         this.repaint();
     }
+    private void add_node(int x, int y){
+        System.out.println(x+","+y);
+        String input=JOptionPane.showInputDialog(this, "Enter node key:","Add Node",JOptionPane.QUESTION_MESSAGE);
+        try{
+            int k = Integer.parseInt(input);
+            if(this.graph.getNode(k) != null){
+                JOptionPane.showMessageDialog(this, "Error: Key already used.","Add Node", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            this.graph.addNode(new BaseNodeData(k, 0,"",0,
+                    new BaseGeoLocation(backConvertLocationX(x), backConvertLocationY(y))));
+            repaint();
+        }
+        catch (NumberFormatException e){
+            JOptionPane.showMessageDialog(this, "Error: Key should be int.","Add Node", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+    }
 
     class PopClickListener extends MouseAdapter {
 
@@ -294,10 +314,15 @@ public class GraphDraw extends JPanel {
                 Object o = e.getSource();
                 if (o instanceof NodeShape) { doPopNode(e, ((NodeShape) o).get_node());}
                 else if (o instanceof EdgeShape) { doPopEdge(e, ((EdgeShape) o).get_edge()); }
+                else if (o instanceof JPanel) { doPopAddNode(e);}
             }
         }
         private void doPopNode(MouseEvent e, NodeData n) {
             PopUpNode menu = new PopUpNode(graph, n, e);
+            menu.show(e.getComponent(), e.getX(), e.getY());
+        }
+        private void doPopAddNode(MouseEvent e) {
+            PopUpAddNode menu = new PopUpAddNode(e);
             menu.show(e.getComponent(), e.getX(), e.getY());
         }
         private void doPopEdge(MouseEvent e, EdgeData ed) {
@@ -318,6 +343,14 @@ public class GraphDraw extends JPanel {
             add(anItem);
             anItem = new JMenuItem("Select as Dest");
             anItem.addActionListener((event) -> set_selected_dest(n));
+            add(anItem);
+        }
+    }
+    class PopUpAddNode extends JPopupMenu {
+        JMenuItem anItem;
+        public PopUpAddNode(MouseEvent e) {
+            anItem = new JMenuItem("Add Node");
+            anItem.addActionListener((event) -> add_node(e.getX(),e.getY()));
             add(anItem);
         }
     }

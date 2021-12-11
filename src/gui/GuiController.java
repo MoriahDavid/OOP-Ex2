@@ -77,7 +77,8 @@ public class GuiController {
         menuItem = new JMenuItem("Add Node", KeyEvent.VK_T); // TODO: AddNode
         menu.add(menuItem);
 
-        menuItem = new JMenuItem("Add Edge", KeyEvent.VK_T); // TODO: AddEdge
+        menuItem = new JMenuItem("Add Edge", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> add_edge());
         menu.add(menuItem);
 
 
@@ -105,6 +106,7 @@ public class GuiController {
         menu.add(cbMenuItem);
 
         menuBar.add(menu);
+
 
         menu = new JMenu("Algorithms");
         menuItem = new JMenuItem("Is Connected", KeyEvent.VK_T);
@@ -143,11 +145,36 @@ public class GuiController {
     private void toggle_enable_drag(){
         g_draw.set_drag_nodes(!g_draw.is_enabled_drag_nodes());
     }
-
     private void toggle_show_edge_weight(){
         g_draw.set_show_edges_weight(!g_draw.is_show_edges_weight());
         g_draw.set_update();
         g_draw.repaint();
+    }
+    private void clear_edges_marks(){
+        this.g_draw.clear_marked_edges();
+    }
+    private void clear_nodes_marks(){
+        this.g_draw.set_selected_src(null);
+        this.g_draw.set_selected_dest(null);
+    }
+
+    private void add_edge(){
+        NodeData src=g_draw.get_selected_src(), dest=g_draw.get_selected_dest();
+        if(src == null || dest == null){
+            String m = "Need to choose src and dest nodes.\nRight click on node and select.";
+            JOptionPane.showMessageDialog(this.frame, m,"Add Edge", JOptionPane.WARNING_MESSAGE);
+            return;
+        }
+        String input=JOptionPane.showInputDialog(this.frame, "Enter edge weight:","Add Edge",JOptionPane.QUESTION_MESSAGE);
+        try{
+            double w = Double.parseDouble(input);
+            this.algo.getGraph().connect(src.getKey(), dest.getKey(), w);
+            this.g_draw.set_update();
+            this.g_draw.repaint();
+        }
+        catch (NumberFormatException e){
+            JOptionPane.showMessageDialog(this.frame, "Error: Weight should be double.","Add Edge", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void algo_is_connected(){
@@ -169,6 +196,7 @@ public class GuiController {
 
         JOptionPane.showMessageDialog(this.frame, msg, "Algorithm: Center", JOptionPane.INFORMATION_MESSAGE);
     }
+
     private void algo_tsp(){
         List<NodeData> all_e = new ArrayList<>();
         this.algo.getGraph().nodeIter().forEachRemaining((n) -> all_e.add(n));
@@ -198,6 +226,10 @@ public class GuiController {
         }
 
         List<NodeData> l = this.algo.shortestPath(src.getKey(), dest.getKey());
+        if(l == null) {
+            JOptionPane.showMessageDialog(this.frame, "There is no path.","Algorithm: Shortest Path", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         List<EdgeData> edges = new ArrayList<>();
         double w = 0;
@@ -213,14 +245,6 @@ public class GuiController {
         String m = "Path len: "+w;
         String t = "Algorithm: Shortest Path ("+src.getKey()+" -> "+dest.getKey()+")";
         JOptionPane.showMessageDialog(this.frame, m,t, JOptionPane.INFORMATION_MESSAGE);
-    }
-
-    private void clear_edges_marks(){
-        this.g_draw.clear_marked_edges();
-    }
-    private void clear_nodes_marks(){
-        this.g_draw.set_selected_src(null);
-        this.g_draw.set_selected_dest(null);
     }
 
     private void open_graph_file(){
@@ -287,6 +311,7 @@ public class GuiController {
             }
         }
     }
+
     public static void main(String[] args){
 
         //        DirectedWeightedGraph g = new BaseDirectedWeightedGraph();

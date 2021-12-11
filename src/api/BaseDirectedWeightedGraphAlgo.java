@@ -63,14 +63,12 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         Iterator<NodeData> it = g.nodeIter();
         NodeData start_node = it.next();
 
+        Dijkstra(g, start_node.getKey());
+
         while (it.hasNext()) {
             NodeData node = it.next();
-            // check if already found route from start_node to this node.
-            if(node.getWeight() < Double.MAX_VALUE)
-                continue;
-
-            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1)
-                return false;
+            // check if there is not path from start_node to node
+            if(node.getWeight() == Double.MAX_VALUE) return false;
         }
 
         g.transpose(); // Transpose the graph and check choose node and check again.
@@ -80,14 +78,12 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         it = g.nodeIter();
         start_node = it.next();
 
+        Dijkstra(g, start_node.getKey());
+
         while (it.hasNext()) {
             NodeData node = it.next();
-            // check have route from start_node to node
-            if(node.getWeight() < Double.MAX_VALUE)
-                continue;
-
-            if(this.shortestPathDist(g, start_node.getKey(), node.getKey()) == -1)
-                return false;
+            // check if there is not path from start_node to node
+            if(node.getWeight() == Double.MAX_VALUE) return false;
         }
 
         return true;

@@ -80,7 +80,8 @@ class BaseDirectedWeightedGraphAlgoTest {
 
         algo.getGraph().removeEdge(1,2);
         algo.getGraph().removeEdge(2,1);
-        assertFalse(algo.isConnected()); // Empty graph
+        assertEquals(0, algo.getGraph().edgeSize());
+        assertFalse(algo.isConnected()); // No edges in the graph
     }
 
     @Test
