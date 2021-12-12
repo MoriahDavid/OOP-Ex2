@@ -69,6 +69,20 @@ Graph          | Shorted path | Is Connected | Center  | TSP |
 Download-
 Run-
 Use-
+This Gui contains graphic ui and we 
+Can you see the graph. every node has its key and every edge has its weight on it.
+menu:
+
+File menu      | Explain      |
+-------------- | ------------ | 
+   Load Graph  |      load graph from json file      | 
+   Save Graph  |     save this graph to json file    | 
+   Exit        |        close the program            |
+
+This Gui contains graphic ui and we 
+Can you see the graph. every node has its key and every edge has its weight on it.
+menu:
+
 
 <br />
 
