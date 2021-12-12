@@ -19,15 +19,22 @@ public class GuiController {
     private DirectedWeightedGraphAlgorithms algo;
     private GraphDraw g_draw;
     private JFrame frame;
+    private String title;
 
     public GuiController(DirectedWeightedGraphAlgorithms algo){
         this.algo = algo;
+    }
+
+    public GuiController(DirectedWeightedGraphAlgorithms algo, String title){
+        this.algo = algo;
+        this.title = title;
     }
 
     public void show(){
 
         this.frame = new JFrame();
         frame.getContentPane();
+        this.set_title(this.title);
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
@@ -79,10 +86,13 @@ public class GuiController {
         menu.setMnemonic(KeyEvent.VK_N);
 
         menuItem = new JMenuItem("Add Node", KeyEvent.VK_T); // TODO: AddNode
+        menuItem.addActionListener((e) -> JOptionPane.showMessageDialog(this.frame,
+                "For adding node, right click on the wanted position",
+                "Add Node", JOptionPane.INFORMATION_MESSAGE));
         menu.add(menuItem);
 
         menuItem = new JMenuItem("Add Edge", KeyEvent.VK_T);
-        menuItem.addActionListener((e) -> add_edge());
+            menuItem.addActionListener((e) -> add_edge());
         menu.add(menuItem);
 
 
@@ -227,6 +237,10 @@ public class GuiController {
         List<NodeData> all_e = new ArrayList<>();
         this.algo.getGraph().nodeIter().forEachRemaining((n) -> all_e.add(n));
         List<NodeData> l = this.algo.tsp(all_e);
+        if(l==null){
+            JOptionPane.showMessageDialog(this.frame, "Error: There is no Nodes","Algorithm: TSP", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         List<EdgeData> edges = new ArrayList<>();
         double w = 0;
@@ -293,6 +307,7 @@ public class GuiController {
         if (r == JFileChooser.APPROVE_OPTION) {
             String path = j.getSelectedFile().getPath();
             if(this.algo.load(path)){
+                set_title(path);
                 System.out.println("Loaded Successfully :" + path);
                 if(this.algo.getGraph().nodeSize() > 100){
                     JOptionPane.showMessageDialog(this.frame, "Graph have too many nodes.\nThe GUI may run slow.",
@@ -306,6 +321,10 @@ public class GuiController {
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+    }
+    private void set_title(String title){
+        this.title = title;
+        this.frame.setTitle(title);
     }
 
     private void save_graph_file(){

@@ -220,6 +220,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public NodeData center() {
+        if(this.graph.nodeSize() == 0) return null;
 
         DirectedWeightedGraph g = this.copy();
         Iterator<NodeData> i = g.nodeIter();
