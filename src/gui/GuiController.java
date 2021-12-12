@@ -3,10 +3,14 @@ package gui;
 import api.*;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
+import javax.swing.event.HyperlinkListener;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.filechooser.FileSystemView;
+import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,11 +134,13 @@ public class GuiController {
 
         menu = new JMenu("Help");
         menuItem = new JMenuItem("Help", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> open_help());
         menu.add(menuItem);
 
         menu.addSeparator();
 
         menuItem = new JMenuItem("About", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> open_help());
         menu.add(menuItem);
 
         menuBar.add(menu);
@@ -177,6 +183,26 @@ public class GuiController {
         }
     }
 
+    private void open_help(){
+        JEditorPane ep =new JEditorPane("text/html",
+                "<html><body><H2>Visit on project github readme for help and usage.</H2><br /> <br />"
+                + "<H3><a href=\"https://github.com/MoriahDavid/OOP-Ex2/blob/main/README.md\">Project GitHub</a></H3><br /><br /></body></html>");
+        ep.setEditable(false);
+        ep.addHyperlinkListener(new HyperlinkListener() {
+            @Override
+            public void hyperlinkUpdate(HyperlinkEvent e) {
+                if (e.getEventType().equals(HyperlinkEvent.EventType.ACTIVATED)) {openWebpage(""+e.getURL());}
+            }});
+        String[] buttons= {"Close"};
+        JOptionPane.showOptionDialog(null,ep,"Help",JOptionPane.DEFAULT_OPTION,JOptionPane.PLAIN_MESSAGE,null,buttons,buttons[0]);
+    }
+    private static void openWebpage(String urlString) {
+        try {
+            Desktop.getDesktop().browse(new URL(urlString).toURI());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void algo_is_connected(){
         boolean i_c = this.algo.isConnected();
         String msg = "The Graph is ";
@@ -312,7 +338,7 @@ public class GuiController {
         }
     }
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
 
         //        DirectedWeightedGraph g = new BaseDirectedWeightedGraph();
         //        g.addNode(new BaseNodeData(key1, 0, "", 0, new BaseGeoLocation(100, 100)));
@@ -325,5 +351,6 @@ public class GuiController {
 
         GuiController g = new GuiController(a);
         g.show();
+
     }
 }
