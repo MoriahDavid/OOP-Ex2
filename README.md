@@ -66,9 +66,9 @@ Graph          | Shorted path | Is Connected | Center  | TSP |
 <br />
 
 ### :large_blue_diamond: GUI:
-Download-
-Run-
-Use-
+Download - for downloading clone the repo</ br>
+Run - Usage: java -jar Ex2.jar {graph_json_path}.
+Use - 
 This Gui contains graphic ui and we 
 Can you see the graph. every node has its key and every edge has its weight on it.
 menu:
