@@ -53,15 +53,15 @@ The methods: <br />
 ### :large_blue_diamond: Algorithms Results:
 <br />
 
-Nodes          | Shorted path | Is Connected | Center  | TSP |
+Graph          | Shorted path | Is Connected | Center  | TSP |
 -------------- | ------------ | -------------| --------|-----|
    G1          |              |              |         |     |
    G2          |              |              |         |     |
    G3          |              |              |         |     |
-   1000        |              |              |         |     |
-   10,000      |              |              |         |     |
-   100,000     |              |              |         |     |
-   1,000,000   |              |              |         |     |
+   1000 nodes  |              |              |         |     |
+   10,000 nodes|              |              |         |     |
+   100,000 nodes|              |              |         |     |
+   1,000,000 nodes  |              |              |         |     |
 
 <br />
 
