@@ -40,7 +40,7 @@ The methods: <br />
 **Dijkstra-** Dijkstra's algorithm found the shortest path between two given nodes. Dijkstra algorithm- https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm <br />
 **shortestPath-** Return list that represents the shortest path between two nodes. In this method we use the Dijkstra algorithm. <br />
 **shortestPathDist-** Return the dist (weight) of the shortest path between two nodes by using Dijkstra method. <br />
-**isConnected-** Check for every node in the graph, if there is a path between it and rest of the vertices by using the method shortestPathDist. Then, we do transpose to the graph and check again. <br />
+**isConnected-** Check for one node on graph, if there is a path between it and rest of the vertices by using the Dijkstra algorithm. Then, we do transpose to the graph and check again. <br />
 **reset_nodes-** Inserts values (tag and weight) to the nodes. <br />
 **center-** Checks for every node who is the furthest node (with the highest weight) and save its weight. After that it return the node with the smallest weight. <br />
 **tsp-** Return a list that represents the shortest path (with the smallest weight)by using greedy algorithm. We reset the nodes tag to zero. It start by choosing random node and every time, we search for the closest node from this node with tag 0. When we find the closest node we change its tag to 1 and add this node to a new list. We will continue to do this as long as there is a node with data 0. If the algorithms cant find a node with tag 0 --> going back one node. Return the new list. <br />
