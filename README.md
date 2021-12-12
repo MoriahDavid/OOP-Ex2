@@ -65,24 +65,34 @@ Graph          | Shorted path | Is Connected | Center  | TSP |
 
 <br />
 
-### :large_blue_diamond: GUI:
-Download - for downloading clone the repo</ br>
-Run - Usage: java -jar Ex2.jar {graph_json_path}.
-Use - 
-This Gui contains graphic ui and we 
-Can you see the graph. every node has its key and every edge has its weight on it.
-menu:
+### :large_blue_diamond: GUI: <br />
 
-File menu      | Explain      |
--------------- | ------------ | 
+This Gui contains graphic ui and we can you see the graph. every node has its key and every edge has its weight on it. <br />
+**Download-** for downloading clone the repo <br />
+**Run-** java -jar Ex2.jar {graph_json_path}. <br />
+**Use-** explain about the menu on the GUI: <br />
+
+**File Menu**      | Explain      |
+-------------- | ------------ |                               
    Load Graph  |      load graph from json file      | 
    Save Graph  |     save this graph to json file    | 
    Exit        |        close the program            |
 
-This Gui contains graphic ui and we 
-Can you see the graph. every node has its key and every edge has its weight on it.
-menu:
-
+**Graph Menu**     | Explain                                   | 
+-------------- | -------------------------------------------|                               
+   Add Node  |      Add node to the graph                   | 
+   Add Edge  |    Add edge to the graph                     | 
+   Clear Marked Edges       |                               |
+   Clear Marked Nodees       |                              |
+   Enable Drag Nodes  |    Enable to move node possition    | 
+   Show Edges Weight  |   Hide/how the weight               | 
+   
+   **Algorithms Menu**      | Explain                                   | 
+-------------- | -------------------------------------------|                               
+   Is Connected  |      Run the algorithm and displays if the graph is connected                  | 
+   Shorted Path  |    Run the algorithm between two chosen nodes in the graph and displays this path      | 
+   Center       |     Run the algorithm and displays the center node                       |
+   TSP          |    Run the algorithm in order to find the shortest path for all the nodes        |
 
 <br />
 
