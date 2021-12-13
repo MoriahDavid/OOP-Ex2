@@ -77,6 +77,8 @@ In this GUI we can see the graph and modified it. every node has its key and eve
 
 **Download-** for downloading clone the repo <br />
 **Run-** java -jar Ex2.jar {graph_json_path}. <br />
+* Can run example files form folder data (G1\G2\G3): "java -jar Ex2.jar Data/G1.json" <br />
+
 **Use-** explain about the menu on the GUI: <br />
 
  <img align="right" width="185" src="https://user-images.githubusercontent.com/64011788/145844006-3c1792bd-f0ae-4c55-8166-037122731632.png">
