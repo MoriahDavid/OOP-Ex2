@@ -67,7 +67,11 @@ Graph          | Shorted path | Is Connected | Center  | TSP |
 
 ### :large_blue_diamond: GUI: <br />
 
-This Gui contains graphic ui and we can you see the graph. every node has its key and every edge has its weight on it. <br />
+This Gui contains graphic ui and we can you see the graph and modified it. every node has its key and every edge has its weight on it. <br />
+<br />
+![image](https://user-images.githubusercontent.com/64011788/145840065-84aaeba0-2fef-4bb6-bd6b-c7d2789d11b9.png)
+<br />
+
 **Download-** for downloading clone the repo <br />
 **Run-** java -jar Ex2.jar {graph_json_path}. <br />
 **Use-** explain about the menu on the GUI: <br />
@@ -84,6 +88,8 @@ This Gui contains graphic ui and we can you see the graph. every node has its ke
    Add Edge  |    Add edge to the graph                     | 
    Clear Marked Edges       |                               |
    Clear Marked Nodees       |                              |
+   Add all for TSP    |   Select all the nodes for TSP algorithm |
+   Remove all for TSP |   Remvoe selection for all nodes for TSP algorithm      |
    Enable Drag Nodes  |    Enable to move node possition    | 
    Show Edges Weight  |   Hide/how the weight               | 
    
@@ -93,6 +99,20 @@ This Gui contains graphic ui and we can you see the graph. every node has its ke
    Shorted Path  |    Run the algorithm between two chosen nodes in the graph and displays this path      | 
    Center       |     Run the algorithm and displays the center node                       |
    TSP          |    Run the algorithm in order to find the shortest path for all the nodes        |
+   
+   **Shortcuts**      |       |
+-------------- | ------------ |                               
+   Delete edge  |     Right click on an edge      |
+   Delete node  |     Right click on a node      | 
+   Select src and dest nodes | Right click on a node      | 
+   Add node for TSP | Right click on a node      | 
+   Add Node |      Right click on the screen      |
+   Move Node |      Drag the node      |
+   <br />
+In right- we chose the yellow node for src and the green for dest. we run the ShortedPath algorithm and in blue its the algorithm result.
+In left- shorcuts for node.
+<br />
+![image](https://user-images.githubusercontent.com/64011788/145840585-459f3131-4e50-44b0-a841-73dab37bcde1.png)
 
 <br />
 
