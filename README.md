@@ -66,8 +66,8 @@ Graph          | Shorted path | Is Connected | Center  | TSP |
 <br />
 
 ### :large_blue_diamond: GUI: <br />
-
-This Gui contains graphic ui and we can you see the graph and modified it. every node has its key and every edge has its weight on it. <br />
+The user interface has been designed with user experience and convenience in mind in order to allow the use of all the features of the system. 
+In this GUI we can see the graph and modified it. every node has its key and every edge has its weight on it. <br />
 <br />
 ![image](https://user-images.githubusercontent.com/64011788/145840065-84aaeba0-2fef-4bb6-bd6b-c7d2789d11b9.png)
 <br />
