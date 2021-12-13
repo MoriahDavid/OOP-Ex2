@@ -60,7 +60,7 @@ class BaseDirectedWeightedGraphAlgoTestPerformance {
     @Test
     void algoPerformanceTSP() {
         BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
-        int timeout = 60;
+        int timeout = 60*15;
 
         for (String path : paths) {
             if (algo.load(path)) {

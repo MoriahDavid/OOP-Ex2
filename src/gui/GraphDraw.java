@@ -137,13 +137,6 @@ public class GraphDraw extends JPanel {
         max_y=max_x=Double.MIN_VALUE;
         min_y=min_x=Double.MAX_VALUE;
 
-        if(this.graph.nodeSize() < 2){
-            min_y=min_x=0;
-            max_x=this.getWidth();
-            max_y=this.getHeight();
-            return;
-        }
-
         for (Iterator<NodeData> it = this.graph.nodeIter(); it.hasNext(); ) {
             NodeData n = it.next();
             if(n.getLocation().x() > max_x){

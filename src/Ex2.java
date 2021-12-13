@@ -45,11 +45,6 @@ public class Ex2 {
     }
 
     public static void main(String[] args){
-        if(args.length == 0){
-            DirectedWeightedGraphAlgorithms a =  new BaseDirectedWeightedGraphAlgo();
-            GuiController g = new GuiController(a, "New Graph");
-            g.show();
-        }
         if(args.length == 1){
             if(!new File(args[0]).exists()) {
                 System.out.println("Error: File '" + args[0] + "' not Exist.");

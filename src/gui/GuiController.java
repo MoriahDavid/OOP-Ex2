@@ -26,7 +26,7 @@ public class GuiController {
     }
 
     public GuiController(DirectedWeightedGraphAlgorithms algo, String title){
-        this.algo = algo;
+        this(algo);
         this.title = title;
     }
 
@@ -38,6 +38,11 @@ public class GuiController {
 
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setVisible(true);
+
+        if(this.algo.getGraph() == null || this.algo.getGraph().nodeSize()==0){
+            JOptionPane.showMessageDialog(this.frame, "Invalid Graph file!","Error", JOptionPane.WARNING_MESSAGE);
+            System.exit(1);
+        }
 
         this.g_draw = new GraphDraw(this.algo.getGraph());
         this.g_draw.setVisible(true);
@@ -85,7 +90,7 @@ public class GuiController {
         menu = new JMenu("Graph");
         menu.setMnemonic(KeyEvent.VK_N);
 
-        menuItem = new JMenuItem("Add Node", KeyEvent.VK_T); // TODO: AddNode
+        menuItem = new JMenuItem("Add Node", KeyEvent.VK_T);
         menuItem.addActionListener((e) -> JOptionPane.showMessageDialog(this.frame,
                 "For adding node, right click on the wanted position",
                 "Add Node", JOptionPane.INFORMATION_MESSAGE));
