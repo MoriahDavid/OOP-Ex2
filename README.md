@@ -118,7 +118,7 @@ This Gui contains graphic ui and we can you see the graph and modified it. every
    Add Node |      Right click on the screen      |
    Move Node |      Drag the node      |
    <br />
-**In right-** we chose the yellow node for src and the green for dest. we run the ShortedPath algorithm and in blue its the algorithm result.
+**In right-** we chose the yellow node for src and the green for dest. we run the ShortedPath algorithm and in blue its the algorithm result. <br />
 **In left-** shorcuts for node.
 <br />
 <br />
