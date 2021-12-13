@@ -135,6 +135,11 @@ In this GUI we can see the graph and modified it. every node has its key and eve
 
 <br />
 
+### :large_blue_diamond: Tests:
+The project has been checked by Junit tests, manual GUI test and preformance tests. <br />
+We also implement graph generator class that creats graph with given parameters.
+<br />
+<br />
 ### :large_blue_diamond: Diagram:
 API - 
 
