@@ -52,7 +52,7 @@ The methods: <br />
 
 ### :large_blue_diamond: Algorithms Results:
 
-We run preformes tests to the algorithms. for every algorithm test we define 10 min for timeout. <br />
+We run preformes tests to the algorithms. for every algorithm test we define 15 min for timeout. <br />
 <br />
 
 Graph          | Shorted path | Is Connected | Center  | TSP |
@@ -130,3 +130,6 @@ In this GUI we can see the graph and modified it. every node has its key and eve
 <br />
 
 ### :large_blue_diamond: Diagram:
+API - 
+
+![api2](https://user-images.githubusercontent.com/64011788/145889095-66eaa95d-e521-4505-be0a-350caad547d7.png)
