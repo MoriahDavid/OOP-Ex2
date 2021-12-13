@@ -51,17 +51,19 @@ The methods: <br />
  <br />
 
 ### :large_blue_diamond: Algorithms Results:
+
+We run preformes tests to the algorithms. for every algorithm test we define 10 min for timeout. <br />
 <br />
 
 Graph          | Shorted path | Is Connected | Center  | TSP |
 -------------- | ------------ | -------------| --------|-----|
-   G1          |              |              |         |     |
-   G2          |              |              |         |     |
-   G3          |              |              |         |     |
-   1000 nodes  |              |              |         |     |
-   10,000 nodes|              |              |         |     |
-   100,000 nodes|              |              |         |     |
-   1,000,000 nodes  |              |              |         |     |
+   G1          |      1 ms    |   1 ms       |   1 ms  | 15 ms |
+   G2          |         1 ms |    1 ms      |16 ms    |    16 ms |
+   G3          |        1 ms  |      1 ms    |    1 ms |  16 ms |
+   1000 nodes  |       15 ms  |     125 ms   | 3,078 ms |2,275 ms |
+   10,000 nodes|     393 ms   |   548 ms     |Timed Out|  |
+   100,000 nodes|    12,649 ms |     32,570 ms|Timed Out|Timed Out|
+   1,000,000 nodes  | Timed Out|Timed Out  |Timed Out| Timed Out |
 
 <br />
 
