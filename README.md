@@ -76,11 +76,16 @@ This Gui contains graphic ui and we can you see the graph and modified it. every
 **Run-** java -jar Ex2.jar {graph_json_path}. <br />
 **Use-** explain about the menu on the GUI: <br />
 
+ <img align="right" width="185" src="https://user-images.githubusercontent.com/64011788/145844006-3c1792bd-f0ae-4c55-8166-037122731632.png">
+
 **File Menu**      | Explain      |
 -------------- | ------------ |                               
    Load Graph  |      load graph from json file      | 
    Save Graph  |     save this graph to json file    | 
    Exit        |        close the program            |
+
+
+ <img align="right" width="185" src="https://user-images.githubusercontent.com/64011788/145841573-eb6d6ae4-36c4-44e6-949b-0ebbe3d2d7b3.png">
 
 **Graph Menu**     | Explain                                   | 
 -------------- | -------------------------------------------|                               
@@ -93,10 +98,14 @@ This Gui contains graphic ui and we can you see the graph and modified it. every
    Enable Drag Nodes  |    Enable to move node possition    | 
    Show Edges Weight  |   Hide/how the weight               | 
    
-   **Algorithms Menu**      | Explain                                   | 
--------------- | -------------------------------------------|                               
-   Is Connected  |      Run the algorithm and displays if the graph is connected                  | 
-   Shorted Path  |    Run the algorithm between two chosen nodes in the graph and displays this path      | 
+   
+<img align="right" width="185" src="https://user-images.githubusercontent.com/64011788/145843053-96e56c54-99f6-4fbe-ac1a-d0f96c624e11.png">
+   
+   
+   **Algorithms Menu**      | Explain                       |
+-------------- | -------------------------------------------|
+   Is Connected  |      Run the algorithm and displays if the graph is connected           |
+   Shorted Path  |    Run the algorithm between two chosen nodes in the graph and displays this path      |
    Center       |     Run the algorithm and displays the center node                       |
    TSP          |    Run the algorithm in order to find the shortest path for all the nodes        |
    
@@ -109,9 +118,11 @@ This Gui contains graphic ui and we can you see the graph and modified it. every
    Add Node |      Right click on the screen      |
    Move Node |      Drag the node      |
    <br />
-In right- we chose the yellow node for src and the green for dest. we run the ShortedPath algorithm and in blue its the algorithm result.
-In left- shorcuts for node.
+**In right-** we chose the yellow node for src and the green for dest. we run the ShortedPath algorithm and in blue its the algorithm result.
+**In left-** shorcuts for node.
 <br />
+<br />
+
 ![image](https://user-images.githubusercontent.com/64011788/145840585-459f3131-4e50-44b0-a841-73dab37bcde1.png)
 
 <br />
