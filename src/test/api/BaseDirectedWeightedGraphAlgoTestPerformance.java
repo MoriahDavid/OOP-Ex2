@@ -16,7 +16,7 @@ class BaseDirectedWeightedGraphAlgoTestPerformance {
     @Test
     void algoPerformanceIsConnected() {
         BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
-        int timeout = 60;
+        int timeout = 60*15;
 
         for (String path : paths) {
             if (algo.load(path)) {
@@ -32,6 +32,25 @@ class BaseDirectedWeightedGraphAlgoTestPerformance {
             } else {
                 System.out.println("File not found (" + path + ")");
             }
+        }
+    }
+
+    @Test
+    void algoPerformanceIsConnected1M(){
+        BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
+        int timeout = 60*15;
+
+        GraphGenerator gen = new GraphGenerator(222, 1000000, 20, 0.1, 10.1);
+
+        algo.init(gen.get_rand_graph());
+        System.out.print("isConnected (1M nodes) - ");
+        try {
+            long t = System.currentTimeMillis();
+            boolean f = timedCall(() -> algo.isConnected(), timeout, TimeUnit.SECONDS);
+            System.out.println((System.currentTimeMillis() - t) + "ms");
+            assertTrue(f);
+        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+            System.out.println("Timed out (" + timeout + " Sec)");
         }
     }
 
@@ -85,7 +104,7 @@ class BaseDirectedWeightedGraphAlgoTestPerformance {
     @Test
     void algoPerformanceShortestPath() {
         BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
-        int timeout = 60;
+        int timeout = 60*15;
 
         for (String path : paths) {
             if (algo.load(path)) {
