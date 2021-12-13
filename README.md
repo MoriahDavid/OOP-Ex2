@@ -61,7 +61,7 @@ Graph          | Shorted path | Is Connected | Center  | TSP |
    G2          |         1 ms |    1 ms      |16 ms    |    16 ms |
    G3          |        1 ms  |      1 ms    |    1 ms |  16 ms |
    1000 nodes  |       15 ms  |     125 ms   | 3,078 ms |2,275 ms |
-   10,000 nodes|     393 ms   |   548 ms     |Timed Out|  |
+   10,000 nodes|     393 ms   |   548 ms     |Timed Out|Timed Out|
    100,000 nodes|    12,649 ms |     32,570 ms|Timed Out|Timed Out|
    1,000,000 nodes  | Timed Out|Timed Out  |Timed Out| Timed Out |
 
