@@ -2,11 +2,12 @@
 <br />
 
 ### :large_blue_diamond: Main Classes:
-BaseNodeData- the main class for the nodes. <br />
+
+#### :black_medium_square: BaseNodeData
 On this class we save for every node: key, tag, info, weight, location. <br />
 We create sets and gets methods. <br />
 
-#### :black_medium_square: BaseEdgeData- the main class for the edges.
+#### :black_medium_square: BaseEdgeData
 On this class we save for every edge: tag, info, source-node, destination-node, weight. <br />
 We create sets and gets methods.
 
