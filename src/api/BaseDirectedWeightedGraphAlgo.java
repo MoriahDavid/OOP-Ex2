@@ -128,7 +128,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         Dijkstra(g, src);
         NodeData d = g.getNode(dest);
 
-        if(d.getWeight() == Double.MAX_VALUE) return -1;
+        if(d.getWeight() == Double.MAX_VALUE) return -1; // if there is no path between src to dest
 
         return d.getWeight();
     }
@@ -156,11 +156,12 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         NodeData n = g.getNode(dest);
         List<NodeData> l = new ArrayList<NodeData>();
 
-        if(n.getTag() == Integer.MIN_VALUE) // There is no path from src to dst
+        if(n.getTag() == Integer.MIN_VALUE) // There is no path from src to dest
             return null;
 
         l.add(n);
 
+        // Add all nodes from the path to a list
         while (n != g.getNode(src)) {
             n = g.getNode(n.getTag());
             if(n == null)
@@ -192,7 +193,7 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         }
 
         g.getNode(src).setWeight(0);
-        q.remove(g.getNode(src));
+        q.remove(g.getNode(src)); // In order to update the order of the queue.
         q.add(g.getNode(src));
 
         while (!q.isEmpty()){
@@ -264,40 +265,49 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
      */
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
+        if(cities == null || cities.size() == 0) return null;
+
+        DirectedWeightedGraph g = this.copy();
         List<NodeData> path_nodes = new ArrayList<>();
-        if(cities.size() == 0){
-            return null;
-        }
 
-        this.reset_nodes(cities, 0, -1); //Set 0 in the node tag and -1 for weight.
+        this.reset_nodes(cities, 0, 0); //Set 0 in the node tag and 0 for weight.
         NodeData rand_n = getRandomNode(cities); //Choose node in random.
-
         rand_n.setTag(1);
         path_nodes.add(rand_n); //Add to the final list.
 
         int visited_nodes = 1;
+        int total_nodes_in_road = 1;
 
         NodeData n = rand_n;
         while(visited_nodes < cities.size()){
-            NodeData next = closestNode(n, cities);
-            if (next == null){
-                next = this.graph.getNode((int)n.getWeight());
+            Dijkstra(g, n.getKey());
+            NodeData next = closestNode(g, n, cities);
+
+            next.setTag(1); // Mark the node in the original graph as visited
+
+            // Go over all node in path from last city to the next one (reverse order)
+            while(next.getKey() != n.getKey()){
+                // Add the node from the path on the right location
+                path_nodes.add(total_nodes_in_road, this.graph.getNode(next.getKey()));
+                int p_node = g.getNode(next.getKey()).getTag(); // Get the previous node
+                if(p_node == Integer.MIN_VALUE) break; // Arrived to the last city
+                next = g.getNode(p_node);
             }
-            else{
-                next.setWeight(n.getKey());
-            }
-            n = next;
-            if(n.getTag()!=1){
-                n.setTag(1);
-                visited_nodes++;
-            }
-            path_nodes.add(n);
+            total_nodes_in_road=path_nodes.size();
+
+            n = path_nodes.get(total_nodes_in_road-1); // Get the last city we arrived to.
+            visited_nodes++;
         }
         this.reset_nodes(cities, 0, 0); // Set 0 in the node tag and 0 for weight.
 
         return path_nodes;
     }
 
+    /**
+     * Returns path Weight of list of connected nodes
+     * @param l - list of consecutive (pairs) of nodes
+     * @return - the sum of path weight.
+     */
     public double pathWeight(List<NodeData> l){
         double total_w=0;
         for(int i=0; i<l.size()-1;i++){
@@ -310,6 +320,11 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         return total_w;
     }
 
+    /**
+     * Returns a random node from nodes list.
+     * @param ln - list of nodes.
+     * @return - random node.
+     */
     private NodeData getRandomNode(List<NodeData> ln){
         if(ln.size() == 0){
             return null;
@@ -318,15 +333,24 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         return ln.get(x);
     }
 
-    private NodeData closestNode(NodeData n1, List<NodeData> ln){
+    /**
+     * Returns  the closet node from src to node in ln list.
+     * Base on the graph is after running Dijkstra algo.
+     * @param g - graph after Dijkstra algo.
+     * @param n1 - src node
+     * @param ln - list of node.
+     * @return - The closest node from the original graph.
+     */
+    private NodeData closestNode(DirectedWeightedGraph g, NodeData n1, List<NodeData> ln){
         double c = Integer.MAX_VALUE;
         NodeData closestNode = null; // The closest node to n1.
         for(int i = 0; i < ln.size(); i++){
-            EdgeData e = this.graph.getEdge(n1.getKey(), ln.get(i).getKey());
-            if(e != null && ln.get(i).getTag()==0) { // If this edge exist and if we visit this node before.
-                if (e.getWeight() < c) { // If the weight (dist) is smaller.
-                    c = e.getWeight();
-                    closestNode = ln.get(i);
+            int node_key = ln.get(i).getKey();
+            double w = g.getNode(node_key).getWeight();
+            if(this.graph.getNode(node_key).getTag()==0 && n1.getKey() != node_key) { // If this edge exist and if we visit this node before.
+                if (w < c) { // If the weight (dist) is smaller.
+                    c = w;
+                    closestNode = this.graph.getNode(node_key);
                 }
             }
         }
@@ -453,10 +477,8 @@ public class BaseDirectedWeightedGraphAlgo implements api.DirectedWeightedGraphA
         System.out.println(a.isConnected());
 
         List<NodeData> l = new ArrayList<>();
-        Iterator<NodeData> it = a.getGraph().nodeIter();
-        while (it.hasNext()){
-            l.add(it.next());
-        }
+        a.getGraph().nodeIter().forEachRemaining((n) -> l.add(n));
+
         System.out.println("Total Nodes in graph: " + l.size());
         List<NodeData> r = a.tsp(l);
         System.out.println("Total Nodes in tsp: " + r.size());

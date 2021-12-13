@@ -107,6 +107,16 @@ public class GuiController {
         menu.add(menuItem);
 
         menu.addSeparator();
+        menuItem = new JMenuItem("Add all for TSP", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> select_all_for_tsp());
+        menu.add(menuItem);
+
+        menuItem = new JMenuItem("Remove all for TSP", KeyEvent.VK_T);
+        menuItem.addActionListener((e) -> remove_all_for_tsp());
+        menu.add(menuItem);
+
+        menu.addSeparator();
+
         cbMenuItem = new JCheckBoxMenuItem("Enable Drag Nodes");
         cbMenuItem.addActionListener((e) -> toggle_enable_drag());
         cbMenuItem.setSelected(true);
@@ -233,15 +243,25 @@ public class GuiController {
         JOptionPane.showMessageDialog(this.frame, msg, "Algorithm: Center", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private void select_all_for_tsp(){
+        this.g_draw.set_all_selected_tsp();
+    }
+    private void remove_all_for_tsp(){
+        this.g_draw.clear_selected_tsp();
+    }
+
     private void algo_tsp(){
-        List<NodeData> all_e = new ArrayList<>();
-        this.algo.getGraph().nodeIter().forEachRemaining((n) -> all_e.add(n));
-        List<NodeData> l = this.algo.tsp(all_e);
-        if(l==null){
-            JOptionPane.showMessageDialog(this.frame, "Error: There is no Nodes","Algorithm: TSP", JOptionPane.ERROR_MESSAGE);
+        List<NodeData> s = this.g_draw.get_selected_tsp();
+        if(s == null || s.isEmpty()){
+            JOptionPane.showMessageDialog(this.frame, "Error: There is no selected nodes for TSP\n\nSelect by right click on node or select all node on 'Graph' menu.","Algorithm: TSP", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if(s.size() < 2){
+            JOptionPane.showMessageDialog(this.frame, "Error: Need at least 2 nodes for TSP\n\nSelect by right click on node or select all node on 'Graph' menu.","Algorithm: TSP", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
+        List<NodeData> l = this.algo.tsp(s);
         List<EdgeData> edges = new ArrayList<>();
         double w = 0;
         for(int i=0; i<l.size()-1;i++){

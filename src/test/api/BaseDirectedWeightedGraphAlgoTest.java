@@ -168,46 +168,60 @@ class BaseDirectedWeightedGraphAlgoTest {
     @Test
     void tspG1() {
         List<NodeData> l = new ArrayList<>();
-        Iterator<NodeData> it = algoG1.getGraph().nodeIter();
-        it.forEachRemaining((n) -> l.add(n));
 
-        algoG1.tsp(l);
+        l.add(algoG1.getGraph().getNode(1));
+        l.add(algoG1.getGraph().getNode(5));
+        l.add(algoG1.getGraph().getNode(10));
+
+        List<NodeData> r = algoG1.tsp(l);
+        for (NodeData n:r) System.out.print(n.getKey() +" -> ");
+
+        assertTrue(r.size() >= 3);
+
+        for(NodeData n:l) assertTrue(r.contains(n));
     }
     @Test
     void tspG2() {
         List<NodeData> l = new ArrayList<>();
-        Iterator<NodeData> it = algoG2.getGraph().nodeIter();
-        it.forEachRemaining((n) -> l.add(n));
+        algoG2.getGraph().nodeIter().forEachRemaining((n) -> l.add(n));
 
-        algoG2.tsp(l);
+        List<NodeData> r = algoG2.tsp(l);
+        for (NodeData n:r) System.out.print(n.getKey() +" -> ");
+
+        for(NodeData n:l) assertTrue(r.contains(n));
     }
     @Test
     void tspG3() {
         List<NodeData> l = new ArrayList<>();
-        Iterator<NodeData> it = algoG3.getGraph().nodeIter();
-        it.forEachRemaining((n) -> l.add(n));
+        algoG3.getGraph().nodeIter().forEachRemaining((n) -> l.add(n));
 
-        algoG3.tsp(l);
+        List<NodeData> r = algoG3.tsp(l);
+        for (NodeData n:r) System.out.print(n.getKey() +" -> ");
+
+        for(NodeData n:l) assertTrue(r.contains(n));
     }
     @Test
     void tsp1000() {
         BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
         algo.load("data\\1000Nodes.json");
         List<NodeData> l = new ArrayList<>();
-        Iterator<NodeData> it = algo.getGraph().nodeIter();
-        it.forEachRemaining((n) -> l.add(n));
+        algo.getGraph().nodeIter().forEachRemaining((n) -> l.add(n));
 
-        algo.tsp(l);
+        List<NodeData> r = algo.tsp(l);
+        for (NodeData n:r) System.out.print(n.getKey() +" -> ");
+
+        for(NodeData n:l) assertTrue(r.contains(n));
     }
     @Test
     void tsp10000() {
         BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
         algo.load("data\\10000Nodes.json");
         List<NodeData> l = new ArrayList<>();
-        Iterator<NodeData> it = algo.getGraph().nodeIter();
-        it.forEachRemaining((n) -> l.add(n));
+        algo.getGraph().nodeIter().forEachRemaining((n) -> l.add(n));
+        List<NodeData> r = algo.tsp(l);
+        System.out.println(algo.pathWeight(r));
 
-        System.out.println(algo.pathWeight(algo.tsp(l)));
+        for(NodeData n:l) assertTrue(r.contains(n));
     }
 
     @Test

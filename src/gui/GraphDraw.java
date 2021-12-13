@@ -5,10 +5,7 @@ import gui.Shapes.EdgeShape;
 import gui.Shapes.NodeShape;
 
 import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
@@ -22,6 +19,7 @@ public class GraphDraw extends JPanel {
     private static final int MINIMUM_NODE_SIZE = 32;
     private static final int NODE_PADDING = 8;
 
+    private Color nodeSelectedTSP = new Color(0x130ED3);
     private Color nodeColorSrc = new Color(0xEADF67);
     private Color nodeColorDest = new Color(0x68D25A);
     private Color edgeColorMarked = new Color(0x130ED3);
@@ -48,6 +46,7 @@ public class GraphDraw extends JPanel {
     private boolean show_edges_weight = true;
 
     private java.util.List<EdgeData> marked_edges;
+    private java.util.List<NodeData> selected_for_tsp;
 
     public void set_drag_nodes(boolean f){
         this.enable_drag_nodes = f;
@@ -76,6 +75,31 @@ public class GraphDraw extends JPanel {
         repaint();
     }
 
+    private void add_selected_tsp(NodeData n){
+        this.selected_for_tsp.add(n);
+        this.set_update();
+        this.repaint();
+    }
+    private void remove_selected_tsp(NodeData n){
+        this.selected_for_tsp.remove(n);
+        this.set_update();
+        this.repaint();
+    }
+    public void clear_selected_tsp(){
+        this.selected_for_tsp.clear();
+        this.set_update();
+        this.repaint();
+    }
+    public List<NodeData> get_selected_tsp(){
+        return this.selected_for_tsp;
+    }
+    public void set_all_selected_tsp(){
+        this.clear_selected_tsp();
+        this.graph.nodeIter().forEachRemaining((n) -> this.selected_for_tsp.add(n));
+        this.set_update();
+        this.repaint();
+    }
+
     public GraphDraw(DirectedWeightedGraph graph){
         this.graph = graph;
         this.last_mc = graph.getMC();
@@ -88,6 +112,7 @@ public class GraphDraw extends JPanel {
         this.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         this.set_scale();
         this.marked_edges = new LinkedList<>();
+        this.selected_for_tsp = new LinkedList<>();
     }
 
     public void set_marked_edges(List<EdgeData> e){
@@ -145,7 +170,6 @@ public class GraphDraw extends JPanel {
         paintBackground(g2d);
 
         if(this.last_mc!=this.graph.getMC() || should_update || this.width != this.getWidth() || this.height != this.getHeight()){
-            System.out.println("rePainting!");
             this.m.clear();
             this.removeAll();
 
@@ -207,7 +231,12 @@ public class GraphDraw extends JPanel {
         else if(node == this.destSelectedNode){
             n.SetColorFill(this.nodeColorDest);
         }
-        n.SetColorStroke(this.nodeColor);
+        if(this.selected_for_tsp.contains(node)){
+            n.SetColorStroke(this.nodeSelectedTSP);
+        }
+        else {
+            n.SetColorStroke(this.nodeColor);
+        }
         this.m.put(node, n);
         this.add(n);
     }
@@ -270,7 +299,6 @@ public class GraphDraw extends JPanel {
         this.repaint();
     }
     private void add_node(int x, int y){
-        System.out.println(x+","+y);
         String input=JOptionPane.showInputDialog(this, "Enter node key:","Add Node",JOptionPane.QUESTION_MESSAGE);
         try{
             int k = Integer.parseInt(input);
@@ -351,6 +379,16 @@ public class GraphDraw extends JPanel {
             anItem = new JMenuItem("Select as Dest");
             anItem.addActionListener((event) -> set_selected_dest(n));
             add(anItem);
+            if(selected_for_tsp.contains(n)){
+                anItem = new JMenuItem("Remove for TSP");
+                anItem.addActionListener((event) -> remove_selected_tsp(n));
+                add(anItem);
+            }
+            else{
+                anItem = new JMenuItem("Add for TSP");
+                anItem.addActionListener((event) -> add_selected_tsp(n));
+                add(anItem);
+            }
         }
     }
     class PopUpAddNode extends JPopupMenu {
