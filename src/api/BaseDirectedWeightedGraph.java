@@ -110,11 +110,13 @@ public class BaseDirectedWeightedGraph implements api.DirectedWeightedGraph {
 
         HashMap<Integer, EdgeData> src_e = this.edges_src.getOrDefault(src, null);
         HashMap<Integer, EdgeData> dest_e = this.edges_dest.getOrDefault(dest, null);
+        // inc the edge counter only if this is new edge and not replace exist one
+        if(this.getEdge(src, dest) == null)
+            this.e_counter++;
 
         EdgeData e = new BaseEdgeData(w, this.getNode(src), this.getNode(dest));
         src_e.put(dest, e);
         dest_e.put(src, e);
-        this.e_counter++;
         this.mc_counter++;
     }
 

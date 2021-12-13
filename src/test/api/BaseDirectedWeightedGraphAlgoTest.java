@@ -98,6 +98,21 @@ class BaseDirectedWeightedGraphAlgoTest {
     }
 
     @Test
+    void isConnectedRand100() {
+        BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
+        GraphGenerator gen = new GraphGenerator(1234, 100, 7,0.1,10.0);
+        algo.init(gen.get_rand_graph());
+        assertTrue(algo.isConnected());
+    }
+    @Test
+    void isConnectedRand1000() {
+        BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
+        GraphGenerator gen = new GraphGenerator(1234, 1000, 8,0.1,10.0);
+        algo.init(gen.get_rand_graph());
+        assertTrue(algo.isConnected());
+    }
+
+    @Test
     void isConnected1000() {
         BaseDirectedWeightedGraphAlgo algo = new BaseDirectedWeightedGraphAlgo();
         algo.load("data/1000Nodes.json");
